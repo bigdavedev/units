@@ -14,6 +14,8 @@ add_gtest ()
 
 coveralls_turn_on_coverage ()
 
+set ( SOURCES distance.h )
+
 coveralls_setup ( "${SOURCES}"
                   ON
                   "${CMAKE_SOURCE_DIR}/external/JoakimSoderberg/coveralls-cmake/cmake" )
