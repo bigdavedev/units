@@ -62,6 +62,6 @@ before_script:
 
 script:
   - export COVERALLS_SERVICE_NAME=travis-ci
-  - export COVERALLS_REPO_TOKEN=ckh0y6Gxhl84MfZmrh3J1mhmzENIupUzy
+  - export COVERALLS_REPO_TOKEN=xfGcbl2zMpSZ0KsOSSKcJ11XtDfTQKNQK
   - cmake -DCMAKE_BUILD_TYPE=Debug .. && make && make runtests && make coveralls
 
