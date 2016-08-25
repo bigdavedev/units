@@ -47,24 +47,25 @@ namespace TestDistanceUnits
         EXPECT_EQ(1000, metres.count());
     }
 
-    TEST_F(DistanceTest, AdditionCompoundAssignment_WhenAddingMetresToMetres_WillResultInMetresAddedToCurrentMetres)
+    TEST_F(DistanceTest, CompoundAssignment_WhenAddingMetresToMetres_WillResultInMetresAddedToCurrentMetres)
     {
         distance += 1_m;
         EXPECT_EQ(2, distance.count());
     }
 
-    TEST_F(DistanceTest, AdditionCompoundAssignment_WhenAddingKilometresToMetres_WillResultInKilometresAddedToCurrentMetres)
+    TEST_F(DistanceTest, CompoundAssignment_WhenAddingKilometresToMetres_WillResultInKilometresAddedToCurrentMetres)
     {
         distance += 1_km;
         EXPECT_EQ(1001, distance.count());
     }
 
-    TEST_F(DistanceTest, AdditionCompoundAssignment_WhenSubtractingMetresToMetres_WillResultInMetresSubtractedToCurrentMetres)
+    TEST_F(DistanceTest, CompoundAssignment_WhenSubtractingMetresToMetres_WillResultInMetresSubtractedToCurrentMetres)
     {
         distance -= 1_m;
         EXPECT_EQ(0, distance.count());
     }
-    TEST_F(DistanceTest, AdditionCompoundAssignment_WhenSubtractingKilometresToMetres_WillResultInKilometresSubtractedToCurrentMetres)
+
+    TEST_F(DistanceTest, CompoundAssignment_WhenSubtractingKilometresToMetres_WillResultInKilometresSubtractedToCurrentMetres)
     {
         distance -= 1_km;
         EXPECT_EQ(-999, distance.count());
