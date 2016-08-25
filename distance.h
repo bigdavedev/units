@@ -20,6 +20,11 @@ namespace std
 
                 constexpr rep count() const { return value; }
 
+                distance& operator++() { ++value; return *this; }
+                distance  operator++(int) { return distance{ value+1 }; }
+                distance& operator--() { --value; return *this; }
+                distance  operator--(int) { return distance{ value-1 }; }
+
             private:
                 rep value;
             };
