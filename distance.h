@@ -130,6 +130,18 @@ namespace std
                     return distance{value - 1};
                 }
 
+                distance& operator+=(distance const other)
+                {
+                    value += other.count();
+                    return *this;
+                }
+
+                distance& operator-=(distance const other)
+                {
+                    value -= other.count();
+                    return *this;
+                }
+
             private:
                 rep value;
             };
