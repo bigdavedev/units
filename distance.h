@@ -112,16 +112,16 @@ namespace std
         }
     }
 
-    namespace literals
+    inline namespace literals
     {
         namespace distance_literals
         {
-            constexpr std::units::si::metres operator"" m(unsigned long long int dist)
+            constexpr std::units::si::metres operator"" _m(unsigned long long int dist)
             {
                 return std::units::si::metres{static_cast<std::units::si::metres::rep>(dist)};
             }
 
-            constexpr std::units::si::kilometres operator"" km(unsigned long long int dist)
+            constexpr std::units::si::kilometres operator"" _km(unsigned long long int dist)
             {
                 return std::units::si::kilometres{static_cast<std::units::si::kilometres::rep>(dist)};
             }
