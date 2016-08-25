@@ -1,4 +1,5 @@
 project ( distance_ut )
+add_definitions ( "-std=c++14" )
 
 set ( TARGET_NAME ${PROJECT_NAME} )
 

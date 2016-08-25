@@ -13,19 +13,30 @@ namespace std
             {
                 using rep = Rep;
 
-                constexpr distance(int value)
+                constexpr distance(rep value)
                     : value{value}
                 {
                 }
 
-                constexpr int count() const { return value; }
+                constexpr rep count() const { return value; }
 
             private:
                 rep value;
             };
 
-            using metres     = distance<int>;
-            using kilometres = distance<int, std::ratio<1000, 1>>;
+            using metres      = distance<long int>;
+            using kilometres  = distance<long int, std::kilo>;
+        }
+    }
+
+    namespace literals
+    {
+        namespace distance_literals
+        {
+            constexpr std::units::si::metres operator"" _m(unsigned long long int dist)
+            {
+                return std::units::si::metres{static_cast<std::units::si::metres::rep>(dist)};
+            }
         }
     }
 }
