@@ -23,8 +23,7 @@ namespace TestDistanceUnits
 
     TEST_F(LiteralsTest, MetresLiteral_WhenUsed_WillReturnMetresType)
     {
-        static_assert(std::is_same<std::units::si::metres, decltype(1_m)>::value,
-                      "Incompatible types");
-        EXPECT_TRUE(true);
+        constexpr auto is_same = std::is_same<std::units::si::metres, decltype(1_m)>::value;
+        EXPECT_TRUE(is_same) << "Incompatible types";
     }
 }
