@@ -41,6 +41,46 @@ namespace TestDistanceUnits
         EXPECT_EQ(0, result.count());
     }
 
+    class DistanceCastTest : public Test
+    {
+    };
+
+    TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToMetres_WillYieldMetres)
+    {
+        auto metres = std::units::si::distance_cast<std::units::si::metres>(std::units::si::metres{1000});
+        EXPECT_EQ(1000, metres.count());
+    }
+
+    TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToKiloMetres_WillYieldKilometres)
+    {
+        auto kilometres = std::units::si::distance_cast<std::units::si::kilometres>(std::units::si::metres{1000});
+        EXPECT_EQ(1, kilometres.count());
+    }
+
+    TEST_F(DistanceCastTest, Cast_WhenCastingFromKilometresToMetres_WillYieldMetres)
+    {
+        auto metres = std::units::si::distance_cast<std::units::si::metres>(std::units::si::kilometres{1});
+        EXPECT_EQ(1000, metres.count());
+    }
+
+    TEST_F(DistanceCastTest, Cast_WhenCastingFromHalfUnitToWhole_WillRoundDown)
+    {
+        auto kilometres = std::units::si::distance_cast<std::units::si::kilometres>(999_m);
+        EXPECT_EQ(0, kilometres.count());
+    }
+
+    TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToYards_WillYieldYards)
+    {
+        auto yards = std::units::si::distance_cast<std::units::si::yards>(1_m);
+        EXPECT_NEAR(1.09361, yards.count(), 0.00001);
+    }
+
+    TEST_F(DistanceCastTest, Cast_WhenCastingFromKiloMetresToYards_WillYieldYards)
+    {
+        auto yards = std::units::si::distance_cast<std::units::si::yards>(std::units::si::kilometres{1});
+        EXPECT_NEAR(1093.6133, yards.count(), 0.0001);
+    }
+
     class LiteralsTest : public Test
     {
     };
