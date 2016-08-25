@@ -8,61 +8,8 @@ namespace std
     {
         namespace si
         {
-            template <typename Rep, typename Length = std::ratio<1>>
-            struct distance
-            {
-                using rep    = Rep;
-                using length = Length;
-
-                constexpr explicit distance(rep value)
-                    : value{value}
-                {
-                }
-
-                constexpr rep count() const
-                {
-                    return value;
-                }
-
-                distance& operator++()
-                {
-                    ++value;
-                    return *this;
-                }
-
-                distance operator++(int)
-                {
-                    return distance{value + 1};
-                }
-
-                distance& operator--()
-                {
-                    --value;
-                    return *this;
-                }
-
-                distance operator--(int)
-                {
-                    return distance{value - 1};
-                }
-
-            private:
-                rep value;
-            };
-
-            using metres     = distance<long int>;
-            using kilometres = distance<long int, std::kilo>;
-
-            // American spellings
-            using meters     = metres;
-            using kilometers = kilometres;
-        }
-
-        // Non SI units that are interoperable with SI units
-        using yards = si::distance<double, std::ratio<9144, 10000>>;
-
-        namespace si
-        {
+            template <typename Rep, typename Length>
+            struct distance;
 
             namespace detail
             {
@@ -138,7 +85,65 @@ namespace std
                                              Ratio::num == 1,
                                              Ratio::den == 1>::cast(from);
             }
+
+            template <typename Rep, typename Length = std::ratio<1>>
+            struct distance
+            {
+                using rep    = Rep;
+                using length = Length;
+
+                constexpr explicit distance(rep value)
+                    : value{value}
+                {
+                }
+
+                template <typename Rep2, typename Length2>
+                constexpr distance(distance<Rep2, Length2> dist)
+                    : value{distance_cast<distance>(dist).count()}
+                {
+                }
+
+                constexpr rep count() const
+                {
+                    return value;
+                }
+
+                distance& operator++()
+                {
+                    ++value;
+                    return *this;
+                }
+
+                distance operator++(int)
+                {
+                    return distance{value + 1};
+                }
+
+                distance& operator--()
+                {
+                    --value;
+                    return *this;
+                }
+
+                distance operator--(int)
+                {
+                    return distance{value - 1};
+                }
+
+            private:
+                rep value;
+            };
+
+            using metres     = distance<long int>;
+            using kilometres = distance<long int, std::kilo>;
+
+            // American spellings
+            using meters     = metres;
+            using kilometers = kilometres;
         }
+
+        // Non SI units that are interoperable with SI units
+        using yards = si::distance<double, std::ratio<9144, 10000>>;
     }
 
     inline namespace literals

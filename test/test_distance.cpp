@@ -41,6 +41,12 @@ namespace TestDistanceUnits
         EXPECT_EQ(0, result.count());
     }
 
+    TEST_F(DistanceTest, ConstructFromMetresFromKilometres_WillCreateMetresContaining1000)
+    {
+        std::units::si::metres metres = 1_km;
+        EXPECT_EQ(1000, metres.count());
+    }
+
     class DistanceCastTest : public Test
     {
     };
