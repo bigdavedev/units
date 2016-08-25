@@ -142,6 +142,30 @@ namespace std
                     return *this;
                 }
 
+                distance& operator*=(rep const scalar)
+                {
+                    value *= scalar;
+                    return *this;
+                }
+
+                distance& operator/=(rep const scalar)
+                {
+                    value /= scalar;
+                    return *this;
+                }
+
+                distance& operator%=(rep const scalar)
+                {
+                    value %= scalar;
+                    return *this;
+                }
+
+                distance& operator%=(distance const other)
+                {
+                    value %= other.count();
+                    return *this;
+                }
+
             private:
                 rep value;
             };

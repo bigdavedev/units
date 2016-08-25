@@ -71,6 +71,33 @@ namespace TestDistanceUnits
         EXPECT_EQ(-999, distance.count());
     }
 
+    TEST_F(DistanceTest, CompoundAssignment_WhenMultiplyingByScalar_WillUpdateValue)
+    {
+        distance *= 10;
+        EXPECT_EQ(10, distance.count());
+    }
+
+    TEST_F(DistanceTest, CompoundAssignment_WhenDividingByScalar_WillUpdateValue)
+    {
+        distance = 10_m;
+        distance /= 2;
+        EXPECT_EQ(5, distance.count());
+    }
+
+    TEST_F(DistanceTest, CompoundAssignment_WhenGettingRemainderByScalar_WillUpdateValue)
+    {
+        distance = 2531_m;
+        distance %= 1000;
+        EXPECT_EQ(531, distance.count());
+    }
+
+    TEST_F(DistanceTest, CompoundAssignment_WhenGettingRemainderByDistance_WillUpdateValue)
+    {
+        distance = 2531_m;
+        distance %= 1_km;
+        EXPECT_EQ(531, distance.count());
+    }
+
     class DistanceCastTest : public Test
     {
     };
