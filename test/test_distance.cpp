@@ -71,13 +71,13 @@ namespace TestDistanceUnits
 
     TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToYards_WillYieldYards)
     {
-        auto yards = std::units::si::distance_cast<std::units::si::yards>(1_m);
+        auto yards = std::units::si::distance_cast<std::units::yards>(1_m);
         EXPECT_NEAR(1.09361, yards.count(), 0.00001);
     }
 
     TEST_F(DistanceCastTest, Cast_WhenCastingFromKiloMetresToYards_WillYieldYards)
     {
-        auto yards = std::units::si::distance_cast<std::units::si::yards>(1_km);
+        auto yards = std::units::si::distance_cast<std::units::yards>(1_km);
         EXPECT_NEAR(1093.6133, yards.count(), 0.0001);
     }
 

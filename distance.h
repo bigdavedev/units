@@ -14,25 +14,37 @@ namespace std
                 using rep    = Rep;
                 using length = Length;
 
-                constexpr distance(rep value)
+                constexpr explicit distance(rep value)
                     : value{value}
                 {
                 }
 
-                constexpr rep count() const { return value; }
+                constexpr rep count() const
+                {
+                    return value;
+                }
 
                 distance& operator++()
                 {
                     ++value;
                     return *this;
                 }
-                distance operator++(int) { return distance{value + 1}; }
+
+                distance operator++(int)
+                {
+                    return distance{value + 1};
+                }
+
                 distance& operator--()
                 {
                     --value;
                     return *this;
                 }
-                distance operator--(int) { return distance{value - 1}; }
+
+                distance operator--(int)
+                {
+                    return distance{value - 1};
+                }
 
             private:
                 rep value;
@@ -40,7 +52,17 @@ namespace std
 
             using metres     = distance<long int>;
             using kilometres = distance<long int, std::kilo>;
-            using yards      = distance<double, std::ratio<9144, 10000>>;
+
+            // American spellings
+            using meters     = metres;
+            using kilometers = kilometres;
+        }
+
+        // Non SI units that are interoperable with SI units
+        using yards = si::distance<double, std::ratio<9144, 10000>>;
+
+        namespace si
+        {
 
             namespace detail
             {
@@ -55,10 +77,11 @@ namespace std
                     template <typename Rep, typename Length>
                     static constexpr ToDistance cast(distance<Rep, Length> from)
                     {
+                        using ToRep = typename ToDistance::rep;
                         return ToDistance{
-                            static_cast<typename ToDistance::rep>(static_cast<CommonType>(from.count())
-                                                                  / static_cast<CommonType>(Ratio::num)
-                                                                  * static_cast<CommonType>(Ratio::den))};
+                            static_cast<ToRep>(static_cast<CommonType>(from.count())
+                                               / static_cast<CommonType>(Ratio::num)
+                                               * static_cast<CommonType>(Ratio::den))};
                     }
                 };
 
@@ -68,8 +91,8 @@ namespace std
                     template <typename Rep, typename Length>
                     static constexpr ToDistance cast(distance<Rep, Length> from)
                     {
-                        return ToDistance{
-                            static_cast<typename ToDistance::rep>(static_cast<CommonType>(from.count()))};
+                        using ToRep = typename ToDistance::rep;
+                        return ToDistance{static_cast<ToRep>(static_cast<CommonType>(from.count()))};
                     }
                 };
 
@@ -79,9 +102,10 @@ namespace std
                     template <typename Rep, typename Length>
                     static constexpr ToDistance cast(distance<Rep, Length> from)
                     {
+                        using ToRep = typename ToDistance::rep;
                         return ToDistance{
-                            static_cast<typename ToDistance::rep>(static_cast<CommonType>(from.count())
-                                                                  * static_cast<CommonType>(Ratio::den))};
+                            static_cast<ToRep>(static_cast<CommonType>(from.count())
+                                               * static_cast<CommonType>(Ratio::den))};
                     }
                 };
 
@@ -91,9 +115,10 @@ namespace std
                     template <typename Rep, typename Length>
                     static constexpr ToDistance cast(distance<Rep, Length> from)
                     {
+                        using ToRep = typename ToDistance::rep;
                         return ToDistance{
-                            static_cast<typename ToDistance::rep>(static_cast<CommonType>(from.count())
-                                                                  / static_cast<CommonType>(Ratio::num))};
+                            static_cast<ToRep>(static_cast<CommonType>(from.count())
+                                               / static_cast<CommonType>(Ratio::num))};
                     }
                 };
             }
@@ -104,10 +129,14 @@ namespace std
             {
                 using ToLength   = typename ToDistance::length;
                 using ToRep      = typename ToDistance::rep;
-                using Ratio      = std::ratio_divide<ToLength, Length>;
                 using CommonType = typename std::common_type<ToRep, Rep, std::intmax_t>::type;
+                using Ratio      = std::ratio_divide<ToLength, Length>;
 
-                return detail::distance_cast<ToDistance, Ratio, CommonType, Ratio::num == 1, Ratio::den == 1>::cast(from);
+                return detail::distance_cast<ToDistance,
+                                             Ratio,
+                                             CommonType,
+                                             Ratio::num == 1,
+                                             Ratio::den == 1>::cast(from);
             }
         }
     }
