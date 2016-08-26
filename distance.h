@@ -170,12 +170,22 @@ namespace std
                 rep value;
             };
 
-            using metres     = distance<long int>;
-            using kilometres = distance<long int, std::kilo>;
+            using nanometres  = distance<long int, std::nano>;
+            using micrometres = distance<long int, std::micro>;
+            using millimetres = distance<long int, std::milli>;
+            using centimetres = distance<long int, std::centi>;
+            using decimetres  = distance<long int, std::deci>;
+            using metres      = distance<long int>;
+            using kilometres  = distance<long int, std::kilo>;
 
             // American spellings
-            using meters     = metres;
-            using kilometers = kilometres;
+            using nanometers  = nanometres;
+            using micrometers = micrometres;
+            using millimeters = millimetres;
+            using centimeters = centimetres;
+            using decimeters  = decimetres;
+            using meters      = metres;
+            using kilometers  = kilometres;
         }
 
         // Non SI units that are interoperable with SI units
@@ -186,6 +196,31 @@ namespace std
     {
         namespace distance_literals
         {
+            constexpr std::units::si::nanometres operator"" _nm(unsigned long long int dist)
+            {
+                return std::units::si::nanometres{static_cast<std::units::si::nanometres::rep>(dist)};
+            }
+
+            constexpr std::units::si::micrometres operator"" _um(unsigned long long int dist)
+            {
+                return std::units::si::micrometres{static_cast<std::units::si::micrometres::rep>(dist)};
+            }
+
+            constexpr std::units::si::millimetres operator"" _mm(unsigned long long int dist)
+            {
+                return std::units::si::millimetres{static_cast<std::units::si::millimetres::rep>(dist)};
+            }
+
+            constexpr std::units::si::centimetres operator"" _cm(unsigned long long int dist)
+            {
+                return std::units::si::centimetres{static_cast<std::units::si::centimetres::rep>(dist)};
+            }
+
+            constexpr std::units::si::decimetres operator"" _dm(unsigned long long int dist)
+            {
+                return std::units::si::decimetres{static_cast<std::units::si::decimetres::rep>(dist)};
+            }
+
             constexpr std::units::si::metres operator"" _m(unsigned long long int dist)
             {
                 return std::units::si::metres{static_cast<std::units::si::metres::rep>(dist)};
@@ -195,6 +230,7 @@ namespace std
             {
                 return std::units::si::kilometres{static_cast<std::units::si::kilometres::rep>(dist)};
             }
+
         }
     }
 }

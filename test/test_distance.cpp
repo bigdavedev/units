@@ -98,6 +98,12 @@ namespace TestDistanceUnits
         EXPECT_EQ(531, distance.count());
     }
 
+    TEST_F(DistanceTest, Meters_IsIdenticalToMetres)
+    {
+        constexpr bool is_same = std::is_same<std::units::si::metres, std::units::si::meters>::value;
+        EXPECT_TRUE(is_same);
+    }
+
     class DistanceCastTest : public Test
     {
     };
@@ -136,6 +142,12 @@ namespace TestDistanceUnits
     {
         auto yards = std::units::si::distance_cast<std::units::yards>(1_km);
         EXPECT_NEAR(1093.6133, yards.count(), 0.0001);
+    }
+
+    TEST_F(DistanceCastTest, Cast_WhenCastingFromKilometresToNanometres_WillYieldNanometres)
+    {
+        auto nanometres = std::units::si::distance_cast<std::units::si::nanometres>(1_km);
+        EXPECT_EQ(1000000000000, nanometres.count());
     }
 
     class LiteralsTest : public Test
