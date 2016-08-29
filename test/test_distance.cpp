@@ -104,6 +104,60 @@ namespace TestDistanceUnits
         EXPECT_TRUE(is_same);
     }
 
+    TEST_F(DistanceTest, OperatorPlus_WhenUsed_WillAddMetresToMetres)
+    {
+        auto result = distance + 1_m;
+        EXPECT_EQ(2, result.count());
+    }
+
+    TEST_F(DistanceTest, OperatorPlus_WhenUsed_WillAddKilometresToMetres)
+    {
+        auto result = distance + 1_km;
+        EXPECT_EQ(1001, result.count());
+    }
+
+    TEST_F(DistanceTest, OperatorMinus_WhenUsed_WillSubtractMetresFromMetres)
+    {
+        auto result = distance - 1_m;
+        EXPECT_EQ(0, result.count());
+    }
+
+    TEST_F(DistanceTest, OperatorMinus_WhenUsed_WillSubtractMetresFromKilometres)
+    {
+        auto result = 1_km - distance;
+        EXPECT_EQ(999, result.count());
+    }
+
+    TEST_F(DistanceTest, OperatorMultiply_WhenUsed_WillMultiplyMetresToScalar)
+    {
+        auto result = distance * 2;
+        EXPECT_EQ(2, result.count());
+    }
+
+    TEST_F(DistanceTest, OperatorMultiply_WhenUsed_WillMultiplyScalarToMetres)
+    {
+        auto result = 2 * distance;
+        EXPECT_EQ(2, result.count());
+    }
+
+    TEST_F(DistanceTest, OperatorDivide_WhenUsed_WillDivideMetresByScalar)
+    {
+        auto result = 2_m / 2;
+        EXPECT_EQ(1, result.count());
+    }
+
+    TEST_F(DistanceTest, OperatorRemainder_WhenGettingRemainderByScalar_WillGiveRemainder)
+    {
+        auto result = 2531_m % 1000;
+        EXPECT_EQ(531, result.count());
+    }
+
+    TEST_F(DistanceTest, OperatorRemainder_WhenGettingRemainderByDistance_WillGiveRemainder)
+    {
+        auto const result = 2531_m % 1_km;
+        EXPECT_EQ(531, result.count());
+    }
+
     class DistanceCastTest : public Test
     {
     };
