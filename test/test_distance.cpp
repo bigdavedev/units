@@ -9,7 +9,7 @@ namespace TestDistanceUnits
     class DistanceTest : public Test
     {
     protected:
-        units::si::distance<long int> distance{1};
+        units::distance<long int> distance{1};
     };
 
     TEST_F(DistanceTest, Constructor_WhenInvoked_WillInitialise)
@@ -43,7 +43,7 @@ namespace TestDistanceUnits
 
     TEST_F(DistanceTest, ConstructFromMetresFromKilometres_WillCreateMetresContaining1000)
     {
-        units::si::metres metres = 1_km;
+        units::metres metres = 1_km;
         EXPECT_EQ(1000, metres.count());
     }
 
@@ -100,7 +100,7 @@ namespace TestDistanceUnits
 
     TEST_F(DistanceTest, Meters_IsIdenticalToMetres)
     {
-        constexpr bool is_same = std::is_same<units::si::metres, units::si::meters>::value;
+        constexpr bool is_same = std::is_same<units::metres, units::meters>::value;
         EXPECT_TRUE(is_same);
     }
 
@@ -110,43 +110,43 @@ namespace TestDistanceUnits
 
     TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToMetres_WillYieldMetres)
     {
-        auto metres = units::si::distance_cast<units::si::metres>(1000_m);
+        auto metres = units::distance_cast<units::metres>(1000_m);
         EXPECT_EQ(1000, metres.count());
     }
 
     TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToKiloMetres_WillYieldKilometres)
     {
-        auto kilometres = units::si::distance_cast<units::si::kilometres>(1000_m);
+        auto kilometres = units::distance_cast<units::kilometres>(1000_m);
         EXPECT_EQ(1, kilometres.count());
     }
 
     TEST_F(DistanceCastTest, Cast_WhenCastingFromKilometresToMetres_WillYieldMetres)
     {
-        auto metres = units::si::distance_cast<units::si::metres>(1_km);
+        auto metres = units::distance_cast<units::metres>(1_km);
         EXPECT_EQ(1000, metres.count());
     }
 
     TEST_F(DistanceCastTest, Cast_WhenCastingFromHalfUnitToWhole_WillRoundDown)
     {
-        auto kilometres = units::si::distance_cast<units::si::kilometres>(999_m);
+        auto kilometres = units::distance_cast<units::kilometres>(999_m);
         EXPECT_EQ(0, kilometres.count());
     }
 
     TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToYards_WillYieldYards)
     {
-        auto yards = units::si::distance_cast<units::yards>(1_m);
+        auto yards = units::distance_cast<units::yards>(1_m);
         EXPECT_NEAR(1.09361, yards.count(), 0.00001);
     }
 
     TEST_F(DistanceCastTest, Cast_WhenCastingFromKiloMetresToYards_WillYieldYards)
     {
-        auto yards = units::si::distance_cast<units::yards>(1_km);
+        auto yards = units::distance_cast<units::yards>(1_km);
         EXPECT_NEAR(1093.6133, yards.count(), 0.0001);
     }
 
     TEST_F(DistanceCastTest, Cast_WhenCastingFromKilometresToNanometres_WillYieldNanometres)
     {
-        auto nanometres = units::si::distance_cast<units::si::nanometres>(1_km);
+        auto nanometres = units::distance_cast<units::nanometres>(1_km);
         EXPECT_EQ(1000000000000, nanometres.count());
     }
 
@@ -156,13 +156,13 @@ namespace TestDistanceUnits
 
     TEST_F(LiteralsTest, MetresLiteral_WhenUsed_WillReturnMetresType)
     {
-        constexpr auto is_same = std::is_same<units::si::metres, decltype(1_m)>::value;
+        constexpr auto is_same = std::is_same<units::metres, decltype(1_m)>::value;
         EXPECT_TRUE(is_same) << "Incompatible types";
     }
 
     TEST_F(LiteralsTest, KilometresLiteral_WhenUsed_WillReturnKilometresType)
     {
-        constexpr auto is_same = std::is_same<units::si::kilometres, decltype(1_km)>::value;
+        constexpr auto is_same = std::is_same<units::kilometres, decltype(1_km)>::value;
         EXPECT_TRUE(is_same) << "Incompatible types";
     }
 }
