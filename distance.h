@@ -143,6 +143,27 @@ namespace units
         rep value;
     };
 
+    // Useful aliases
+    using nanometres  = distance<long int, std::nano>;
+    using micrometres = distance<long int, std::micro>;
+    using millimetres = distance<long int, std::milli>;
+    using centimetres = distance<long int, std::centi>;
+    using decimetres  = distance<long int, std::deci>;
+    using metres      = distance<long int>;
+    using kilometres  = distance<long int, std::kilo>;
+
+    // American spellings
+    using nanometers  = nanometres;
+    using micrometers = micrometres;
+    using millimeters = millimetres;
+    using centimeters = centimetres;
+    using decimeters  = decimetres;
+    using meters      = metres;
+    using kilometers  = kilometres;
+
+    using yards = distance<double, std::ratio<9144, 10000>>;
+
+    // Arithmetic operations
     template <
         typename Rep1,
         typename Length1,
@@ -234,26 +255,6 @@ namespace units
         using result_type = distance<typename std::common_type<Rep1, Rep2>::type, Length>;
         return static_cast<result_type>(static_cast<result_type>(lhs).count() % scalar);
     }
-
-    using nanometres  = distance<long int, std::nano>;
-    using micrometres = distance<long int, std::micro>;
-    using millimetres = distance<long int, std::milli>;
-    using centimetres = distance<long int, std::centi>;
-    using decimetres  = distance<long int, std::deci>;
-    using metres      = distance<long int>;
-    using kilometres  = distance<long int, std::kilo>;
-
-    // American spellings
-    using nanometers  = nanometres;
-    using micrometers = micrometres;
-    using millimeters = millimetres;
-    using centimeters = centimetres;
-    using decimeters  = decimetres;
-    using meters      = metres;
-    using kilometers  = kilometres;
-
-    // Non SI units that are interoperable with SI units
-    using yards = distance<double, std::ratio<9144, 10000>>;
 }
 
 inline namespace literals
