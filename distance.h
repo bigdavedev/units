@@ -218,7 +218,6 @@ namespace units
 	using astronimical_units = distance<double, std::ratio<149597870700>>;
 	using light_years        = distance<double, std::ratio_multiply<std::ratio<94607304725808, 10>, kilometres::length>>;
 	using parsecs            = distance<double, std::ratio_multiply<std::ratio<308567758146719, 10>, kilometres::length>>;
-	using hubble_lengths     = distance<double, std::ratio_multiply<std::ratio<14400000000>, light_years::length>>;
 
 	// Arithmetic operations
 	template <
