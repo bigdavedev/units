@@ -5,7 +5,9 @@ set ( CMAKE_MODULE_PATH
       ${PROJECT_SOURCE_DIR}/cmake
       ${PROJECT_SOURCE_DIR}/external/JoakimSoderberg/coveralls-cmake/cmake )
 
-add_definitions ( "-std=c++14" )
+add_definitions ( "-std=c++1z" )
+
+file(REMOVE_RECURSE ${PROJECT_BINARY_DIR}/*.gcda)
 
 # Here be test!
 include ( gtest )
