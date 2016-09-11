@@ -1,13 +1,44 @@
 #pragma once
 
 #include <ratio>
-
-#include "utility.h"
+#include <type_traits>
+#include <cstdint>
 
 namespace units
 {
 	template <typename Rep, typename Length>
 	struct distance;
+
+	namespace detail
+	{
+		template<intmax_t Numerator>
+		struct integer_sign
+			: std::integral_constant<intmax_t, (Numerator < 0) ? -1 : 1>
+		{};
+
+		template<intmax_t Numerator>
+		struct integer_abs
+			: std::integral_constant<intmax_t, Numerator * integer_sign<Numerator>::value>
+		{};
+
+		template<intmax_t Numerator, intmax_t Quotient>
+		struct greatest_common_divisor;
+
+		template<intmax_t Numerator, intmax_t Quotient>
+		struct greatest_common_divisor
+			: greatest_common_divisor<Quotient, (Numerator % Quotient)>
+		{};
+
+		template<intmax_t Numerator>
+		struct greatest_common_divisor<Numerator, 0>
+			: std::integral_constant<intmax_t, integer_sign<Numerator>::value>
+		{};
+
+		template<intmax_t Quotient>
+		struct greatest_common_divisor<0, Quotient>
+			: std::integral_constant<intmax_t, integer_sign<Quotient>::value>
+		{};
+	}
 }
 
 namespace std
@@ -16,8 +47,8 @@ namespace std
 	struct distance_common_type
 	{
 	private:
-		using gcd_num    = utility::greatest_common_divisor<Length1::num, Length2::num>;
-		using gcd_den    = utility::greatest_common_divisor<Length1::den, Length2::den>;
+		using gcd_num    = units::detail::greatest_common_divisor<Length1::num, Length2::num>;
+		using gcd_den    = units::detail::greatest_common_divisor<Length1::den, Length2::den>;
 		using common_rep = typename CommonRep::type;
 		using ratio      = std::ratio<gcd_num::value, (Length1::den / gcd_den::value) * Length2::den>;
 
