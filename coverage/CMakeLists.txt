@@ -1,6 +1,6 @@
 
 include_directories ( ${CMAKE_SOURCE_DIR} )
-set ( SOURCES distance.h )
+set ( SOURCES units.h )
 
 coveralls_setup ( "${SOURCES}"
                   ON
