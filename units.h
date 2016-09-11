@@ -197,12 +197,12 @@ namespace units
 		}
 		distance& operator%=(rep const scalar)
 		{
-			value %= scalar;
+			value = fmod(value, scalar);
 			return *this;
 		}
 		distance& operator%=(distance const other)
 		{
-			value %= other.count();
+			value = fmod(value, other.count());
 			return *this;
 		}
 
@@ -211,13 +211,13 @@ namespace units
 	};
 
 	// Useful aliases
-	using nanometres  = distance<long int, std::nano>;
-	using micrometres = distance<long int, std::micro>;
-	using millimetres = distance<long int, std::milli>;
-	using centimetres = distance<long int, std::centi>;
-	using decimetres  = distance<long int, std::deci>;
-	using metres      = distance<long int>;
-	using kilometres  = distance<long int, std::kilo>;
+	using nanometres  = distance<double, std::nano>;
+	using micrometres = distance<double, std::micro>;
+	using millimetres = distance<double, std::milli>;
+	using centimetres = distance<double, std::centi>;
+	using decimetres  = distance<double, std::deci>;
+	using metres      = distance<double>;
+	using kilometres  = distance<double, std::kilo>;
 
 	// American spellings
 	using nanometers  = nanometres;
@@ -328,8 +328,8 @@ namespace units
 		using distance2   = distance<Rep2, Length2>;
 		using common_type = typename std::common_type<distance1, distance2>::type;
 
-		return static_cast<common_type>(static_cast<common_type>(lhs).count()
-		                                % static_cast<common_type>(rhs).count());
+		return static_cast<common_type>(fmod(static_cast<common_type>(lhs).count(),
+		                                static_cast<common_type>(rhs).count()));
 	}
 
 	template <
@@ -340,7 +340,7 @@ namespace units
 	    -> distance<typename std::common_type<Rep1, Rep2>::type, Length>
 	{
 		using result_type = distance<typename std::common_type<Rep1, Rep2>::type, Length>;
-		return static_cast<result_type>(static_cast<result_type>(lhs).count() % scalar);
+		return static_cast<result_type>(fmod(static_cast<result_type>(lhs).count(), scalar));
 	}
 }
 

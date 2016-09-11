@@ -44,7 +44,7 @@ namespace TestDistanceUnits
 	TEST_F(DistanceTest, ConstructFromMetresFromKilometres_WillCreateMetresContaining1000)
 	{
 		units::metres metres = 1_km;
-		EXPECT_EQ(1000, metres.count());
+		EXPECT_NEAR(1000.0, metres.count(), 0.000000001);
 	}
 
 	TEST_F(DistanceTest, CompoundAssignment_WhenAddingMetresToMetres_WillResultInMetresAddedToCurrentMetres)
@@ -165,24 +165,24 @@ namespace TestDistanceUnits
 	TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToMetres_WillYieldMetres)
 	{
 		auto metres = units::distance_cast<units::metres>(1000_m);
-		EXPECT_EQ(1000, metres.count());
+		EXPECT_NEAR(1000, metres.count(), 0.0000001);
 	}
 
 	TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToKiloMetres_WillYieldKilometres)
 	{
 		auto kilometres = units::distance_cast<units::kilometres>(1000_m);
-		EXPECT_EQ(1, kilometres.count());
+		EXPECT_NEAR(1, kilometres.count(), 0.0000001);
 	}
 
 	TEST_F(DistanceCastTest, Cast_WhenCastingFromKilometresToMetres_WillYieldMetres)
 	{
 		auto metres = units::distance_cast<units::metres>(1_km);
-		EXPECT_EQ(1000, metres.count());
+		EXPECT_NEAR(1000, metres.count(), 0.0000001);
 	}
 
 	TEST_F(DistanceCastTest, Cast_WhenCastingFromHalfUnitToWhole_WillRoundDown)
 	{
-		auto kilometres = units::distance_cast<units::kilometres>(999_m);
+		auto kilometres = units::distance_cast<units::distance<int, std::kilo>>(999_m);
 		EXPECT_EQ(0, kilometres.count());
 	}
 
@@ -219,7 +219,7 @@ namespace TestDistanceUnits
 	TEST_F(DistanceCastTest, Cast_WhenCastingFromKilometresToNanometres_WillYieldNanometres)
 	{
 		auto nanometres = units::distance_cast<units::nanometres>(1_km);
-		EXPECT_EQ(1000000000000, nanometres.count());
+		EXPECT_NEAR(1000000000000, nanometres.count(), 0.0000001);
 	}
 
 	template <typename T>
