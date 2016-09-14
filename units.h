@@ -129,9 +129,16 @@ namespace units
 		};
 	}
 
+	template <typename T>
+	struct is_distance : std::false_type {};
+
+	template <typename Rep, typename Length>
+	struct is_distance<distance<Rep, Length>>
+	    : std::true_type {};
+
 	template <typename ToDistance, typename Rep, typename Length>
 	constexpr auto distance_cast(distance<Rep, Length> from)
-	    -> typename std::enable_if<true, ToDistance>::type
+	    -> typename std::enable_if<is_distance<ToDistance>::value, ToDistance>::type
 	{
 		using ToLength   = typename ToDistance::length;
 		using ToRep      = typename ToDistance::rep;
