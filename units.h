@@ -1,10 +1,11 @@
 #pragma once
 
 #include <ratio>
+#include <stdexcept>
 #include <type_traits>
 
-#include <cstdint>
 #include <cmath>
+#include <cstdint>
 
 namespace units
 {
@@ -40,6 +41,13 @@ namespace units
 		struct greatest_common_divisor<0, Quotient>
 			: std::integral_constant<intmax_t, integer_sign<Quotient>::value>
 		{};
+
+		template <typename T>
+		auto fmod(T x, T y)
+		    -> typename std::enable_if<std::is_floating_point<T>::value, long long int>::type
+		{
+			return y != 0 ? x - std::trunc(x / y) * y : throw std::domain_error{"Dividing by zero!"};
+		};
 	}
 }
 
@@ -206,12 +214,12 @@ namespace units
 		}
 		distance& operator%=(rep const scalar)
 		{
-			value = fmod(value, scalar);
+			value = detail::fmod(value, scalar);
 			return *this;
 		}
 		distance& operator%=(distance const other)
 		{
-			value = fmod(value, other.count());
+			value = detail::fmod(value, other.count());
 			return *this;
 		}
 
@@ -337,8 +345,8 @@ namespace units
 		using distance2   = distance<Rep2, Length2>;
 		using common_type = typename std::common_type<distance1, distance2>::type;
 
-		return static_cast<common_type>(fmod(static_cast<common_type>(lhs).count(),
-		                                static_cast<common_type>(rhs).count()));
+		return static_cast<common_type>(detail::fmod(static_cast<common_type>(lhs).count(),
+		                                             static_cast<common_type>(rhs).count()));
 	}
 
 	template <
@@ -349,7 +357,8 @@ namespace units
 	    -> distance<typename std::common_type<Rep1, Rep2>::type, Length>
 	{
 		using result_type = distance<typename std::common_type<Rep1, Rep2>::type, Length>;
-		return static_cast<result_type>(fmod(static_cast<result_type>(lhs).count(), scalar));
+		return static_cast<result_type>(detail::fmod(static_cast<result_type>(lhs).count(),
+		                                             static_cast<Rep1>(scalar)));
 	}
 }
 

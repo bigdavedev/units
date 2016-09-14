@@ -9,7 +9,7 @@ namespace TestDistanceUnits
 	class DistanceTest : public Test
 	{
 	protected:
-		units::distance<long int> distance{1};
+		units::distance<double> distance{1};
 	};
 
 	TEST_F(DistanceTest, Constructor_WhenInvoked_WillInitialise)
