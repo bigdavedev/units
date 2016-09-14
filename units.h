@@ -14,33 +14,38 @@ namespace units
 
 	namespace detail
 	{
-		template<intmax_t Numerator>
+		template <intmax_t Numerator>
 		struct integer_sign
-			: std::integral_constant<intmax_t, (Numerator < 0) ? -1 : 1>
-		{};
+		    : std::integral_constant<intmax_t, (Numerator < 0) ? -1 : 1>
+		{
+		};
 
-		template<intmax_t Numerator>
+		template <intmax_t Numerator>
 		struct integer_abs
-			: std::integral_constant<intmax_t, Numerator * integer_sign<Numerator>::value>
-		{};
+		    : std::integral_constant<intmax_t, Numerator * integer_sign<Numerator>::value>
+		{
+		};
 
-		template<intmax_t Numerator, intmax_t Quotient>
+		template <intmax_t Numerator, intmax_t Quotient>
 		struct greatest_common_divisor;
 
-		template<intmax_t Numerator, intmax_t Quotient>
+		template <intmax_t Numerator, intmax_t Quotient>
 		struct greatest_common_divisor
-			: greatest_common_divisor<Quotient, (Numerator % Quotient)>
-		{};
+		    : greatest_common_divisor<Quotient, (Numerator % Quotient)>
+		{
+		};
 
-		template<intmax_t Numerator>
+		template <intmax_t Numerator>
 		struct greatest_common_divisor<Numerator, 0>
-			: std::integral_constant<intmax_t, integer_sign<Numerator>::value>
-		{};
+		    : std::integral_constant<intmax_t, integer_sign<Numerator>::value>
+		{
+		};
 
-		template<intmax_t Quotient>
+		template <intmax_t Quotient>
 		struct greatest_common_divisor<0, Quotient>
-			: std::integral_constant<intmax_t, integer_sign<Quotient>::value>
-		{};
+		    : std::integral_constant<intmax_t, integer_sign<Quotient>::value>
+		{
+		};
 
 		template <typename T>
 		auto fmod(T x, T y)
@@ -138,11 +143,15 @@ namespace units
 	}
 
 	template <typename T>
-	struct is_distance : std::false_type {};
+	struct is_distance : std::false_type
+	{
+	};
 
 	template <typename Rep, typename Length>
 	struct is_distance<distance<Rep, Length>>
-	    : std::true_type {};
+	    : std::true_type
+	{
+	};
 
 	template <typename ToDistance, typename Rep, typename Length>
 	constexpr auto distance_cast(distance<Rep, Length> from)
