@@ -243,14 +243,14 @@ namespace units
 	using chains   = distance<double, std::ratio_multiply<std::ratio<66>, feet::length>>;
 	using furlongs = distance<double, std::ratio_multiply<std::ratio<660>, feet::length>>;
 	using miles    = distance<double, std::ratio_multiply<std::ratio<5280>, feet::length>>;
-	using league   = distance<double, std::ratio_multiply<std::ratio<15840>, feet::length>>;
+	using leagues  = distance<double, std::ratio_multiply<std::ratio<15840>, feet::length>>;
 	using inches   = distance<double, std::ratio_divide<feet::length, std::ratio<12>>>;
-	using thou     = distance<double, std::ratio_divide<feet::length, std::ratio<12000>>>;
+	using thous    = distance<double, std::ratio_divide<feet::length, std::ratio<12000>>>;
 
 	// Maritime
-	using fathom        = distance<double, std::ratio_multiply<std::ratio<608, 100>, feet::length>>;
-	using cable         = distance<double, std::ratio_multiply<std::ratio<608>, feet::length>>;
-	using nautical_mile = distance<double, std::ratio_multiply<std::ratio<6080>, feet::length>>;
+	using fathoms        = distance<double, std::ratio_multiply<std::ratio<608, 100>, feet::length>>;
+	using cables         = distance<double, std::ratio_multiply<std::ratio<608>, feet::length>>;
+	using nautical_miles = distance<double, std::ratio_multiply<std::ratio<6080>, feet::length>>;
 
 	// Astronimical Units
 	using earth_radii        = distance<double, std::ratio_multiply<std::ratio<6371>, kilometres::length>>;
