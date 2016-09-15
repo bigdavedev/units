@@ -348,7 +348,9 @@ namespace units
 	    typename Rep2,
 	    typename Length2>
 	constexpr auto operator%(distance<Rep1, Length1> lhs, distance<Rep2, Length2> rhs)
-	    -> typename std::common_type<distance<Rep1, Length1>, distance<Rep2, Length2>>::type
+	    -> typename std::enable_if<std::is_floating_point<typename std::common_type<Rep1, Rep2>::type>::value,
+	                               typename std::common_type<distance<Rep1, Length1>,
+	                                                         distance<Rep2, Length2>>::type>::type
 	{
 		using distance1   = distance<Rep1, Length1>;
 		using distance2   = distance<Rep2, Length2>;
@@ -360,14 +362,44 @@ namespace units
 
 	template <
 	    typename Rep1,
+	    typename Length1,
+	    typename Rep2,
+	    typename Length2>
+	constexpr auto operator%(distance<Rep1, Length1> lhs, distance<Rep2, Length2> rhs)
+	    -> typename std::enable_if<std::is_integral<typename std::common_type<Rep1, Rep2>::type>::value,
+	                               typename std::common_type<distance<Rep1, Length1>,
+	                                                         distance<Rep2, Length2>>::type>::type
+	{
+		using distance1   = distance<Rep1, Length1>;
+		using distance2   = distance<Rep2, Length2>;
+		using common_type = typename std::common_type<distance1, distance2>::type;
+
+		return static_cast<common_type>(static_cast<common_type>(lhs).count() % static_cast<common_type>(rhs).count());
+	}
+
+	template <
+	    typename Rep1,
 	    typename Length,
 	    typename Rep2>
 	constexpr auto operator%(distance<Rep1, Length> lhs, Rep2 const scalar)
-	    -> distance<typename std::common_type<Rep1, Rep2>::type, Length>
+	    -> typename std::enable_if<std::is_floating_point<typename std::common_type<Rep1, Rep2>::type>::value,
+	                               distance<typename std::common_type<Rep1, Rep2>::type, Length>>::type
 	{
 		using result_type = distance<typename std::common_type<Rep1, Rep2>::type, Length>;
 		return static_cast<result_type>(detail::fmod(static_cast<result_type>(lhs).count(),
 		                                             static_cast<Rep1>(scalar)));
+	}
+
+	template <
+	    typename Rep1,
+	    typename Length,
+	    typename Rep2>
+	constexpr auto operator%(distance<Rep1, Length> lhs, Rep2 const scalar)
+	    -> typename std::enable_if<std::is_integral<typename std::common_type<Rep1, Rep2>::type>::value,
+	                               distance<typename std::common_type<Rep1, Rep2>::type, Length>>::type
+	{
+		using result_type = distance<typename std::common_type<Rep1, Rep2>::type, Length>;
+		return static_cast<result_type>(static_cast<result_type>(lhs).count() % static_cast<Rep1>(scalar));
 	}
 }
 

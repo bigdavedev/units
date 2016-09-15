@@ -98,6 +98,20 @@ namespace TestDistanceUnits
 		EXPECT_EQ(531, distance.count());
 	}
 
+	TEST_F(DistanceTest, CompoundAssignment_WhenGettingRemainderByIntScalar_WillUpdateValue)
+	{
+		distance = units::distance<int>{2531};
+		distance %= 1000;
+		EXPECT_EQ(531, distance.count());
+	}
+
+	TEST_F(DistanceTest, CompoundAssignment_WhenGettingRemainderByIntDistance_WillUpdateValue)
+	{
+		distance = units::distance<int>{2531};
+		distance %= 1_km;
+		EXPECT_EQ(531, distance.count());
+	}
+
 	TEST_F(DistanceTest, Meters_IsIdenticalToMetres)
 	{
 		constexpr bool is_same = std::is_same<units::metres, units::meters>::value;
@@ -155,6 +169,18 @@ namespace TestDistanceUnits
 	TEST_F(DistanceTest, OperatorRemainder_WhenGettingRemainderByDistance_WillGiveRemainder)
 	{
 		auto const result = 2531_m % 1_km;
+		EXPECT_EQ(531, result.count());
+	}
+
+	TEST_F(DistanceTest, OperatorRemainderInt_WhenGettingRemainderByDistance_WillGiveRemainder)
+	{
+		auto const result = units::distance<int>{2531} % 1_km;
+		EXPECT_EQ(531, result.count());
+	}
+
+	TEST_F(DistanceTest, OperatorRemainderInt_WhenGettingRemainderByScalar_WillGiveRemainder)
+	{
+		auto const result = units::distance<int>{2531} % 1000;
 		EXPECT_EQ(531, result.count());
 	}
 
