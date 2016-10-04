@@ -275,4 +275,13 @@ namespace TestDistanceUnits
 
 	INSTANTIATE_TYPED_TEST_CASE_P(Metric, LiteralsTest, MetricLiteralsTuple);
 	INSTANTIATE_TYPED_TEST_CASE_P(Imperial, LiteralsTest, ImperialLiteralsTuple);
+
+	class UtilityTest : public Test
+	{
+	};
+
+	TEST_F(UtilityTest, FMod_WhenGivenZeroForY_WillThrowDomainError)
+	{
+		EXPECT_THROW(units::detail::fmod(1.0, 0.0), std::domain_error);
+	}
 }
