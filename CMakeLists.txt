@@ -18,9 +18,9 @@ message ( STATUS "version: " ${GIT_REPO_VERSION} )
 find_package ( Doxygen )
 if ( DOXYGEN_FOUND )
 	configure_file ( doxygen/Doxyfile.in ${CMAKE_BINARY_DIR}/Doxyfile @ONLY )
-	add_custom_target ( doc 
+	add_custom_target ( doc
 		${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/Doxyfile
-		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs
 						COMMENT "Generating Doxygen files..." VERBATIM )
 endif ()
 
