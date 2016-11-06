@@ -76,7 +76,7 @@ namespace units
 		    -> typename std::enable_if<std::is_floating_point<T>::value, long long int>::type
 		{
 			return y != 0 ? x - std::trunc(x / y) * y : throw std::domain_error{"Dividing by zero!"};
-		};
+		};	
 	}
 }
 
@@ -191,6 +191,43 @@ namespace units
 		                             CommonType,
 		                             Ratio::num == 1,
 		                             Ratio::den == 1>::cast(from);
+	}
+
+	namespace detail
+	{
+		template <class CommonRep,
+			class Length,
+			class Rep2,
+			bool = std::is_convertible<Rep2, CommonRep>::value>
+			struct distance_div_mod_base
+		{ // return type for distance / rep and distance % rep
+			typedef units::distance<CommonRep, Length> type;
+		};
+
+		template <class CommonRep,
+			class Length,
+			class Rep2>
+			struct distance_div_mod_base<CommonRep, Length, Rep2, false>
+		{ // no return type
+		};
+
+		template <class Rep1,
+			class Length,
+			class Rep2,
+			bool = is_distance<Rep2>::value>
+			struct distance_div_mod
+		{ // no return type
+		};
+
+		template <class Rep1,
+			class Length,
+			class Rep2>
+			struct distance_div_mod<Rep1, Length, Rep2, false>
+			: distance_div_mod_base<typename std::common_type<Rep1, Rep2>::type,
+			Length,
+			Rep2>
+		{ // return type for distance / rep and distance % rep
+		};
 	}
 
 	template <typename Rep, typename Length = std::ratio<1>>
@@ -375,33 +412,13 @@ namespace units
 	    typename Rep2,
 	    typename Length2>
 	constexpr auto operator%(distance<Rep1, Length1> lhs, distance<Rep2, Length2> rhs)
-	    -> typename std::enable_if<std::is_floating_point<typename std::common_type<Rep1, Rep2>::type>::value,
-	                               typename std::common_type<distance<Rep1, Length1>,
-	                                                         distance<Rep2, Length2>>::type>::type
+	    -> typename std::common_type<distance<Rep1, Length1>, distance<Rep2, Length2>>::type
 	{
 		using distance1   = distance<Rep1, Length1>;
 		using distance2   = distance<Rep2, Length2>;
 		using common_type = typename std::common_type<distance1, distance2>::type;
 
-		return static_cast<common_type>(detail::fmod(static_cast<common_type>(lhs).count(),
-		                                             static_cast<common_type>(rhs).count()));
-	}
-
-	template <
-	    typename Rep1,
-	    typename Length1,
-	    typename Rep2,
-	    typename Length2>
-	constexpr auto operator%(distance<Rep1, Length1> lhs, distance<Rep2, Length2> rhs)
-	    -> typename std::enable_if<std::is_integral<typename std::common_type<Rep1, Rep2>::type>::value,
-	                               typename std::common_type<distance<Rep1, Length1>,
-	                                                         distance<Rep2, Length2>>::type>::type
-	{
-		using distance1   = distance<Rep1, Length1>;
-		using distance2   = distance<Rep2, Length2>;
-		using common_type = typename std::common_type<distance1, distance2>::type;
-
-		return static_cast<common_type>(static_cast<common_type>(lhs).count() % static_cast<common_type>(rhs).count());
+		return common_type{common_type{lhs}.count() % common_type{rhs}.count()};
 	}
 
 	template <
@@ -409,24 +426,10 @@ namespace units
 	    typename Length,
 	    typename Rep2>
 	constexpr auto operator%(distance<Rep1, Length> lhs, Rep2 const scalar)
-	    -> typename std::enable_if<std::is_floating_point<typename std::common_type<Rep1, Rep2>::type>::value,
-	                               distance<typename std::common_type<Rep1, Rep2>::type, Length>>::type
+	    -> typename detail::distance_div_mod<Rep1, Length, Rep2>::type
 	{
 		using result_type = distance<typename std::common_type<Rep1, Rep2>::type, Length>;
-		return static_cast<result_type>(detail::fmod(static_cast<result_type>(lhs).count(),
-		                                             static_cast<Rep1>(scalar)));
-	}
-
-	template <
-	    typename Rep1,
-	    typename Length,
-	    typename Rep2>
-	constexpr auto operator%(distance<Rep1, Length> lhs, Rep2 const scalar)
-	    -> typename std::enable_if<std::is_integral<typename std::common_type<Rep1, Rep2>::type>::value,
-	                               distance<typename std::common_type<Rep1, Rep2>::type, Length>>::type
-	{
-		using result_type = distance<typename std::common_type<Rep1, Rep2>::type, Length>;
-		return static_cast<result_type>(static_cast<result_type>(lhs).count() % static_cast<Rep1>(scalar));
+		return result_type{result_type{lhs}.count() % result_type{static_cast<typename result_type::rep>(scalar)}.count()};
 	}
 }
 

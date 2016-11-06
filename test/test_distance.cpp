@@ -160,21 +160,9 @@ namespace TestDistanceUnits
 		EXPECT_EQ(1, result.count());
 	}
 
-	TEST_F(DistanceTest, OperatorRemainder_WhenGettingRemainderByScalar_WillGiveRemainder)
-	{
-		auto result = 2531_m % 1000;
-		EXPECT_EQ(531, result.count());
-	}
-
-	TEST_F(DistanceTest, OperatorRemainder_WhenGettingRemainderByDistance_WillGiveRemainder)
-	{
-		auto const result = 2531_m % 1_km;
-		EXPECT_EQ(531, result.count());
-	}
-
 	TEST_F(DistanceTest, OperatorRemainderInt_WhenGettingRemainderByDistance_WillGiveRemainder)
 	{
-		auto const result = units::distance<int>{2531} % 1_km;
+		auto const result = units::distance<int>{ 2531 } % units::distance<int, std::kilo>{1};
 		EXPECT_EQ(531, result.count());
 	}
 
