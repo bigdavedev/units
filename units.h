@@ -294,11 +294,14 @@ namespace units
 	using nautical_miles = distance<double, std::ratio_multiply<std::ratio<6080>, feet::length>>;
 
 	// Astronimical Units
-	using earth_radii        = distance<double, std::ratio_multiply<std::ratio<6371>, kilometres::length>>;
-	using lunar_distances    = distance<double, std::ratio_multiply<std::ratio<384402>, kilometres::length>>;
-	using astronimical_units = distance<double, std::ratio<149597870700>>;
-	using light_years        = distance<double, std::ratio_multiply<std::ratio<94607304725808, 10>, kilometres::length>>;
-	using parsecs            = distance<double, std::ratio_multiply<std::ratio<308567758146719, 10>, kilometres::length>>;
+	//
+	// Unfortunately, std::ratio uses std::intmax_t which does not have enough precision for defining a hubble length
+	// which is 14.4 billion lightyears.
+	using earth_radii        = distance<long double, std::ratio_multiply<std::ratio<6371>, kilometres::length>>;
+	using lunar_distances    = distance<long double, std::ratio_multiply<std::ratio<384402>, kilometres::length>>;
+	using astronimical_units = distance<long double, std::ratio<149597870700>>;
+	using light_years        = distance<long double, std::ratio_multiply<std::ratio<94607304725808, 10>, kilometres::length>>;
+	using parsecs            = distance<long double, std::ratio_multiply<std::ratio<308567758146719, 10>, kilometres::length>>;
 
 	// Arithmetic operations
 	template <
