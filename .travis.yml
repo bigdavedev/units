@@ -55,6 +55,11 @@ matrix:
           packages:
             - clang-3.6
             - libncurses5-dev
+            
+    - os: osx
+      env: COMPILER=gcc CXX=g++ CC=gcc
+    - os: osx
+      env: COMPILER=clang CXX=clang++ CC=clang
 
 before_script:
   - mkdir -p build
