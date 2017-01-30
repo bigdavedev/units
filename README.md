@@ -1,6 +1,7 @@
 # units
 
 [![Build Status](https://travis-ci.org/bigdavedev/units.svg?branch=master)](https://travis-ci.org/bigdavedev/units)
+[![Build status](https://ci.appveyor.com/api/projects/status/nw99lno48xefeg87/branch/master?svg=true)](https://ci.appveyor.com/project/bigdavedev/units/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/bigdavedev/units/badge.svg?branch=master)](https://coveralls.io/github/bigdavedev/units?branch=master)
 
 ## Purpose
