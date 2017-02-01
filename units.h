@@ -76,7 +76,7 @@ namespace units
 		    -> typename std::enable_if<std::is_floating_point<T>::value, long long int>::type
 		{
 			return y != 0 ? x - std::trunc(x / y) * y : throw std::domain_error{"Dividing by zero!"};
-		};	
+		};
 	}
 }
 
@@ -196,36 +196,36 @@ namespace units
 	namespace detail
 	{
 		template <class CommonRep,
-			class Length,
-			class Rep2,
-			bool = std::is_convertible<Rep2, CommonRep>::value>
-			struct distance_div_mod_base
+		          class Length,
+		          class Rep2,
+		          bool = std::is_convertible<Rep2, CommonRep>::value>
+		struct distance_div_mod_base
 		{ // return type for distance / rep and distance % rep
 			typedef units::distance<CommonRep, Length> type;
 		};
 
 		template <class CommonRep,
-			class Length,
-			class Rep2>
-			struct distance_div_mod_base<CommonRep, Length, Rep2, false>
+		          class Length,
+		          class Rep2>
+		struct distance_div_mod_base<CommonRep, Length, Rep2, false>
 		{ // no return type
 		};
 
 		template <class Rep1,
-			class Length,
-			class Rep2,
-			bool = is_distance<Rep2>::value>
-			struct distance_div_mod
+		          class Length,
+		          class Rep2,
+		          bool = is_distance<Rep2>::value>
+		struct distance_div_mod
 		{ // no return type
 		};
 
 		template <class Rep1,
-			class Length,
-			class Rep2>
-			struct distance_div_mod<Rep1, Length, Rep2, false>
-			: distance_div_mod_base<typename std::common_type<Rep1, Rep2>::type,
-			Length,
-			Rep2>
+		          class Length,
+		          class Rep2>
+		struct distance_div_mod<Rep1, Length, Rep2, false>
+		    : distance_div_mod_base<typename std::common_type<Rep1, Rep2>::type,
+		                            Length,
+		                            Rep2>
 		{ // return type for distance / rep and distance % rep
 		};
 	}
