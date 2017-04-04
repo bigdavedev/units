@@ -26,7 +26,8 @@ namespace TestDistanceUnits
 	TEST_F(DistanceTest, PostIncrementOperator_WillIncrementDistanceByOne)
 	{
 		auto result = distance++;
-		EXPECT_EQ(2, result.count());
+		EXPECT_EQ(2, distance.count());
+		EXPECT_EQ(1, result.count());
 	}
 
 	TEST_F(DistanceTest, PreDecrementOperator_WillDecrementDistanceByOne)
@@ -38,7 +39,8 @@ namespace TestDistanceUnits
 	TEST_F(DistanceTest, PostDecrementOperator_WillDecrementDistanceByOne)
 	{
 		auto result = distance--;
-		EXPECT_EQ(0, result.count());
+		EXPECT_EQ(0, distance.count());
+		EXPECT_EQ(1, result.count());
 	}
 
 	TEST_F(DistanceTest, ConstructFromMetresFromKilometres_WillCreateMetresContaining1000)
