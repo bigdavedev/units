@@ -437,6 +437,7 @@ inline namespace literals
 {
 	namespace distance_literals
 	{
+		// Metric
 		constexpr units::nanometres operator"" _nm(unsigned long long int dist)
 		{
 			return units::nanometres{static_cast<units::nanometres::rep>(dist)};
@@ -472,9 +473,77 @@ inline namespace literals
 			return units::kilometres{static_cast<units::kilometres::rep>(dist)};
 		}
 
+		// Imperial
 		constexpr units::inches operator"" _in(unsigned long long int dist)
 		{
-			return units::inches{static_cast<units::inches::rep>(dist)};
+			return units::inches{ static_cast<units::inches::rep>(dist) };
+		}
+
+		constexpr units::feet operator"" _ft(unsigned long long int dist)
+		{
+			return units::feet{ static_cast<units::feet::rep>(dist) };
+		}
+
+		constexpr units::yards operator"" _yd(unsigned long long int dist)
+		{
+			return units::yards{ static_cast<units::yards::rep>(dist) };
+		}
+
+		constexpr units::chains operator"" _ch(unsigned long long int dist)
+		{
+			return units::chains{ static_cast<units::chains::rep>(dist) };
+		}
+
+		constexpr units::furlongs operator"" _fur(unsigned long long int dist)
+		{
+			return units::inches{ static_cast<units::inches::rep>(dist) };
+		}
+
+		constexpr units::miles operator"" _mi(unsigned long long int dist)
+		{
+			return units::miles{ static_cast<units::miles::rep>(dist) };
+		}
+
+		constexpr units::leagues operator"" _lea(unsigned long long int dist)
+		{
+			return units::leagues{ static_cast<units::leagues::rep>(dist) };
+		}
+
+		constexpr units::thous operator"" _th(unsigned long long int dist)
+		{
+			return units::thous{ static_cast<units::thous::rep>(dist) };
+		}
+
+		// Maritime
+		constexpr units::fathoms operator"" _ftm(unsigned long long int dist)
+		{
+			return units::fathoms{ static_cast<units::fathoms::rep>(dist) };
+		}
+
+		// Astronomical Units
+		constexpr units::earth_radii operator"" _R(unsigned long long int dist)
+		{
+			return units::earth_radii{ static_cast<units::earth_radii::rep>(dist) };
+		}
+
+		constexpr units::lunar_distances operator"" _LD(unsigned long long int dist)
+		{
+			return units::lunar_distances{ static_cast<units::lunar_distances::rep>(dist) };
+		}
+
+		constexpr units::astronimical_units operator"" _AU(unsigned long long int dist)
+		{
+			return units::astronimical_units{ static_cast<units::astronimical_units::rep>(dist) };
+		}
+
+		constexpr units::light_years operator"" _ly(unsigned long long int dist)
+		{
+			return units::light_years { static_cast<units::light_years::rep>(dist) };
+		}
+
+		constexpr units::parsecs operator"" _pc(unsigned long long int dist)
+		{
+			return units::parsecs{ static_cast<units::parsecs::rep>(dist) };
 		}
 	}
 }

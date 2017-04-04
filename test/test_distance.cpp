@@ -258,11 +258,29 @@ namespace TestDistanceUnits
 	                                  std::tuple<units::metres, decltype(1_m)>,
 	                                  std::tuple<units::kilometres, decltype(1_km)>>;
 
-	using ImperialLiteralsTuple = Types<std::tuple<units::inches, decltype(1_in)>>;
+	using ImperialLiteralsTuple = Types<std::tuple<units::inches, decltype(1_in)>,
+	                                    std::tuple<units::feet, decltype(1_ft)>,
+	                                    std::tuple<units::yards, decltype(1_yd)>,
+	                                    std::tuple<units::chains, decltype(1_ch)>,
+	                                    std::tuple<units::furlongs, decltype(1_fur)>,
+	                                    std::tuple<units::miles, decltype(1_mi)>,
+	                                    std::tuple<units::leagues, decltype(1_lea)>,
+	                                    std::tuple<units::thous, decltype(1_th)>>;
+
+	using MaritimeLiteralsTuple = Types<std::tuple<units::fathoms, decltype(1_ftm)>>;
+
+	using AstronomicalUnitsLiteralsTuple = Types<std::tuple<units::earth_radii, decltype(1_R)>,
+	                                             std::tuple<units::lunar_distances, decltype(1_LD)>,
+	                                             std::tuple<units::astronimical_units, decltype(1_AU)>,
+	                                             std::tuple<units::light_years, decltype(1_ly)>,
+	                                             std::tuple<units::parsecs, decltype(1_pc)>>;
+
 	REGISTER_TYPED_TEST_CASE_P(LiteralsTest, LiteralGeneratesCorrectType);
 
 	INSTANTIATE_TYPED_TEST_CASE_P(Metric, LiteralsTest, MetricLiteralsTuple);
 	INSTANTIATE_TYPED_TEST_CASE_P(Imperial, LiteralsTest, ImperialLiteralsTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Maritime, LiteralsTest, MaritimeLiteralsTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(AstronomicalUnits, LiteralsTest, AstronomicalUnitsLiteralsTuple);
 
 	class UtilityTest : public Test
 	{
