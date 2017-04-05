@@ -10,16 +10,10 @@ set (TEST_SOURCES
 	test_distance.cpp
 )
 
-if (WIN32)
-	# Prevent overriding the parent project's compiler/linker
-	# settings on Windows
-	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-endif ()
-
 add_executable (${TARGET_NAME} ${TEST_SOURCES})
 add_dependencies ( ${TARGET_NAME} gtest_main )
 
-include_directories (SYSTEM gtest)
+include_directories (SYSTEM ${CMAKE_SOURCE_DIR}/external/googletest/googletest/include)
 include_directories (${CMAKE_SOURCE_DIR})
 
 target_link_libraries (${TARGET_NAME}

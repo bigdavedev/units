@@ -5,6 +5,7 @@ project (units)
 option (UNITS_BUILD_DOCUMENTATION "Build documentation with doxygen" ON)
 option (UNITS_BUILD_TESTS "Build unit test suite" ON)
 option (UNITS_ENABLE_COVERAGE "Enable coverage with Coveralls" OFF)
+option (UNITS_ENABLE_COVERAGE_UPLOAD "Enable uploading of coverage data to coveralls.io" OFF)
 
 ## Generate Doxygen
 if (UNITS_BUILD_DOCUMENTATION)
@@ -32,6 +33,12 @@ endif ()
 if (UNITS_BUILD_TESTS)
 	set (BUILD_GTEST ON CACHE BOOL "" FORCE)
 	set (BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+	if (WIN32)
+		# Prevent overriding the parent project's compiler/linker
+		# settings on Windows
+		set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+	endif ()
+
 	add_subdirectory (${PROJECT_SOURCE_DIR}/external/googletest)
 
 	enable_testing ()
