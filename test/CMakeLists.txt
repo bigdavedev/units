@@ -19,13 +19,8 @@ endif ()
 add_executable (${TARGET_NAME} ${TEST_SOURCES})
 add_dependencies ( ${TARGET_NAME} gtest_main )
 
-target_include_directories (${TARGET_NAME}
-	PRIVATE
-	${CMAKE_SOURCE_DIR}
-
-	SYSTEM
-	gtest
-)
+include_directories (SYSTEM gtest)
+include_directories (${CMAKE_SOURCE_DIR})
 
 target_link_libraries (${TARGET_NAME}
 	PRIVATE
