@@ -1,22 +1,36 @@
-version: 0.{build}.0
-pull_requests:
-  do_not_increment_build_number: true
-configuration: Debug
-platform: x64
-clone_depth: 1
+os: Visual Studio 2015
+
+clone_folder: c:/projects/units
+
+platform:
+  - x64
+  - x86
+
+configuration:
+  - Debug
+
 environment:
   matrix:
-    - BUILD_SYSTEM: "Visual Studio 14 2015 Win64"
+    - GENERATOR: Visual Studio 14 2015 Win64
+    - GENERATOR: Visual Studio 14 2015
+  #  - GENERATOR: MinGW Makefiles
+
+before_build:
+  - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+  - set PATH=C:\MinGW\bin;%PATH%
+  - git submodule update --init --recursive
+  - md build
+  - cd build
+  - cmake -Wno-dev -G"%GENERATOR%" ..
+
 build_script:
-- cmd: >-
-    git submodule update --init --recursive
+  - cmake --build . --config %CONFIGURATION%
 
-    mkdir build
+test_script:
+  - cmd: ctest -VV -C %CONFIGURATION%
 
-    cd build
-
-    cmake -G "%BUILD_SYSTEM%" ..
-
-    cmake --build .
-    
-    ctest -V
+matrix:
+  fast_finish: true
+  allow_failures:
+    - platform: x64
+    - GENERATOR: Visual Studio 14 2015 Win32
