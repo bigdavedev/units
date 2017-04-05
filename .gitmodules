@@ -1,3 +1,6 @@
 [submodule "external/JoakimSoderberg/coveralls-cmake"]
 	path = external/JoakimSoderberg/coveralls-cmake
 	url = https://github.com/JoakimSoderberg/coveralls-cmake
+[submodule "external/googletest"]
+	path = external/googletest
+	url = https://github.com/google/googletest
