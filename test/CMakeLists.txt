@@ -17,7 +17,6 @@ include_directories (SYSTEM ${CMAKE_SOURCE_DIR}/external/googletest/googletest/i
 include_directories (${CMAKE_SOURCE_DIR})
 
 target_link_libraries (${TARGET_NAME}
-	PRIVATE
 	-pthread
 	gtest_main
 )
