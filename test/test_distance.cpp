@@ -1,15 +1,43 @@
 #include <gtest/gtest.h>
 
+#include <typeindex>
+#include <typeinfo>
+#include <unordered_map>
+
 #include "units.h"
+
 using namespace testing;
 using namespace distance_literals;
 
 namespace TestDistanceUnits
 {
+	namespace conversion_tables
+	{
+		std::unordered_map<std::type_index, double> metric_to_imperial = {
+			{ std::type_index{ typeid(units::thous) }, 39370.078740 },
+			{ std::type_index{ typeid(units::inches) }, 39.370079 },
+			{ std::type_index{ typeid(units::feet) }, 3.280839 },
+			{ std::type_index{ typeid(units::yards) }, 1.093613 },
+			{ std::type_index{ typeid(units::chains) }, 0.049709 },
+			{ std::type_index{ typeid(units::furlongs) }, 0.004970 },
+			{ std::type_index{ typeid(units::miles) }, 0.000621 },
+			{ std::type_index{ typeid(units::leagues) }, 0.000207 }
+		};
+
+		std::unordered_map<std::type_index, units::metres> imperial_to_metric = {
+			{std::type_index{typeid(units::thous)}, units::metres{0.0000254}},
+			{std::type_index{typeid(units::inches)}, units::metres{0.0254}},
+			{std::type_index{typeid(units::feet)}, units::metres{0.3048}},
+			{std::type_index{typeid(units::yards)}, units::metres{0.9144}},
+			{std::type_index{typeid(units::chains)}, units::metres{20.1168}},
+			{std::type_index{typeid(units::furlongs)}, units::metres{201.168}},
+			{std::type_index{typeid(units::miles)}, units::metres{1609.344}},
+			{std::type_index{typeid(units::leagues)}, units::metres{4828.032}}
+		};
+	}
+
 	class UnitConstructorTest : public Test
 	{
-	protected:
-		units::distance<double> distance{1};
 	};
 
 	TEST_F(UnitConstructorTest, Constructor_WhenInvoked_WillInitialise)
@@ -24,7 +52,75 @@ namespace TestDistanceUnits
 		EXPECT_EQ(1000, metres.count());
 	}
 
-	class UnitIncrementDecrementTest : public UnitConstructorTest
+	class NonMetricToMetricConstruction : public UnitConstructorTest, public WithParamInterface<std::tuple<units::metres, units::metres>>
+	{
+	};
+
+	TEST_P(NonMetricToMetricConstruction, Contructor_WhenGivenConvertibleType_WillYieldCorrectConversion)
+	{
+		EXPECT_NEAR(std::get<1>(GetParam()).count(), std::get<0>(GetParam()).count(), 0.0000001);
+	}
+
+	INSTANTIATE_TEST_CASE_P(ImperialToMetric,
+	                        NonMetricToMetricConstruction,
+	                        Values(std::make_tuple(1_th, units::metres{0.0000254}),
+	                               std::make_tuple(1_in, units::metres{0.0254}),
+	                               std::make_tuple(1_ft, units::metres{0.3048}),
+	                               std::make_tuple(1_yd, units::metres{0.9144}),
+	                               std::make_tuple(1_ch, units::metres{20.1168}),
+	                               std::make_tuple(1_fur, units::metres{201.168}),
+	                               std::make_tuple(1_mi, units::metres{1609.344}),
+	                               std::make_tuple(1_lea, units::metres{4828.032})));
+
+	INSTANTIATE_TEST_CASE_P(MaritimeToMetric,
+	                        NonMetricToMetricConstruction,
+	                        Values(std::make_tuple(1_ftm, units::metres{1.853184}),
+	                               std::make_tuple(units::cables{1}, units::metres{185.3184}),
+	                               std::make_tuple(units::nautical_miles{1}, units::metres{1853.184})));
+
+	INSTANTIATE_TEST_CASE_P(AstronomicalToMetric,
+	                        NonMetricToMetricConstruction,
+	                        Values(std::make_tuple(1_R, 6371000_m),
+	                               std::make_tuple(1_LD, 384402000_m),
+	                               std::make_tuple(1_AU, 149597870700_m),
+	                               std::make_tuple(1_ly, 9460730472580800_m),
+	                               std::make_tuple(1_pc, 30856775814671900_m)));
+
+	template <typename T>
+	class MetricToNonMetricConstruction : public UnitConstructorTest
+	{
+	protected:
+	};
+
+	TYPED_TEST_CASE_P(MetricToNonMetricConstruction);
+
+	TYPED_TEST_P(MetricToNonMetricConstruction, Contructor_WhenGivenConvertibleType_WillYieldCorrectConversion)
+	{
+		auto expected = conversion_tables::metric_to_imperial[std::type_index{typeid(TypeParam)}];
+		auto actual   = TypeParam{1_m}.count();
+		EXPECT_NEAR(expected, actual, 0.000001);
+	}
+
+	using ImperialTypesTuple = Types<units::thous,
+	                                 units::inches,
+	                                 units::feet,
+	                                 units::yards,
+	                                 units::chains,
+	                                 units::furlongs,
+	                                 units::miles,
+	                                 units::leagues>;
+
+	REGISTER_TYPED_TEST_CASE_P(MetricToNonMetricConstruction, Contructor_WhenGivenConvertibleType_WillYieldCorrectConversion);
+
+	INSTANTIATE_TYPED_TEST_CASE_P(Metric, MetricToNonMetricConstruction, ImperialTypesTuple);
+
+	class UnitBaseTest : public Test
+	{
+	protected:
+		units::metres distance{ 1 };
+	};
+
+	class UnitIncrementDecrementTest : public UnitBaseTest
 	{
 	};
 
@@ -56,7 +152,7 @@ namespace TestDistanceUnits
 		EXPECT_EQ(1, result.count());
 	}
 
-	class UnitCompoundAssignmentTest : public UnitConstructorTest
+	class UnitCompoundAssignmentTest : public UnitBaseTest
 	{
 	};
 
@@ -72,13 +168,13 @@ namespace TestDistanceUnits
 		EXPECT_EQ(1001, distance.count());
 	}
 
-	TEST_F(UnitCompoundAssignmentTest, CompoundSubtractionAssignment_WhenSubtractingMetresToMetres_WillResultInMetresSubtractedToCurrentMetres)
+	TEST_F(UnitCompoundAssignmentTest, CompoundSubtractionAssignment_WhenSubtractingMetresFromMetres_WillResultInMetresSubtractedToCurrentMetres)
 	{
 		distance -= 1_m;
 		EXPECT_EQ(0, distance.count());
 	}
 
-	TEST_F(UnitCompoundAssignmentTest, CompoundSubtractionAssignment_WhenSubtractingKilometresToMetres_WillResultInKilometresSubtractedToCurrentMetres)
+	TEST_F(UnitCompoundAssignmentTest, CompoundSubtractionAssignment_WhenSubtractingKilometresFromMetres_WillResultInKilometresSubtractedToCurrentMetres)
 	{
 		distance -= 1_km;
 		EXPECT_EQ(-999, distance.count());
@@ -129,48 +225,43 @@ namespace TestDistanceUnits
 	{
 	};
 
-	TEST_F(UnitArithmeticOperationsTest, OperatorPlus_WhenUsed_WillAddMetresToMetres)
+	TEST_F(UnitArithmeticOperationsTest, OperatorPlus_WillAddMetresToMetres)
 	{
 		auto result = 1_m + 1_m;
 		EXPECT_EQ(2, result.count());
 	}
 
-	TEST_F(UnitArithmeticOperationsTest, OperatorPlus_WhenUsed_WillAddKilometresToMetres)
+	TEST_F(UnitArithmeticOperationsTest, OperatorPlus_WillAddKilometresToMetres)
 	{
 		auto result = 1_m + 1_km;
 		EXPECT_EQ(1001, result.count());
 	}
 
-	TEST_F(UnitArithmeticOperationsTest, CreatingMetresFromKilometres_WillYieldMetres)
-	{
-		EXPECT_EQ(1000, units::metres{1_km}.count());
-	}
-
-	TEST_F(UnitArithmeticOperationsTest, OperatorMinus_WhenUsed_WillSubtractMetresFromMetres)
+	TEST_F(UnitArithmeticOperationsTest, OperatorMinus_WillSubtractMetresFromMetres)
 	{
 		auto result = 1_m - 1_m;
 		EXPECT_EQ(0, result.count());
 	}
 
-	TEST_F(UnitArithmeticOperationsTest, OperatorMinus_WhenUsed_WillSubtractMetresFromKilometres)
+	TEST_F(UnitArithmeticOperationsTest, OperatorMinus_WillSubtractMetresFromKilometres)
 	{
 		auto result = 1_km - 1_m;
 		EXPECT_EQ(999, result.count());
 	}
 
-	TEST_F(UnitArithmeticOperationsTest, OperatorMultiply_WhenUsed_WillMultiplyMetresToScalar)
+	TEST_F(UnitArithmeticOperationsTest, OperatorMultiply_WillMultiplyMetresToScalar)
 	{
 		auto result = 1_m * 2;
 		EXPECT_EQ(2, result.count());
 	}
 
-	TEST_F(UnitArithmeticOperationsTest, OperatorMultiply_WhenUsed_WillMultiplyScalarToMetres)
+	TEST_F(UnitArithmeticOperationsTest, OperatorMultiply_WillMultiplyScalarToMetres)
 	{
 		auto result = 2 * 1_m;
 		EXPECT_EQ(2, result.count());
 	}
 
-	TEST_F(UnitArithmeticOperationsTest, OperatorDivide_WhenUsed_WillDivideMetresByScalar)
+	TEST_F(UnitArithmeticOperationsTest, OperatorDivide_WillDivideMetresByScalar)
 	{
 		auto result = 2_m / 2;
 		EXPECT_EQ(1, result.count());
@@ -192,64 +283,28 @@ namespace TestDistanceUnits
 	{
 	};
 
-	TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToMetres_WillYieldMetres)
+	TEST_F(DistanceCastTest, DistanceCast_WhenCastingFromMetresToMetres_WillYieldMetres)
 	{
 		auto metres = units::distance_cast<units::metres>(1000_m);
 		EXPECT_NEAR(1000, metres.count(), 0.0000001);
 	}
 
-	TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToKiloMetres_WillYieldKilometres)
+	TEST_F(DistanceCastTest, DistanceCast_WhenCastingFromMetresToKiloMetres_WillYieldKilometres)
 	{
 		auto kilometres = units::distance_cast<units::kilometres>(1000_m);
 		EXPECT_NEAR(1, kilometres.count(), 0.0000001);
 	}
 
-	TEST_F(DistanceCastTest, Cast_WhenCastingFromKilometresToMetres_WillYieldMetres)
+	TEST_F(DistanceCastTest, DistanceCast_WhenCastingFromKilometresToMetres_WillYieldMetres)
 	{
 		auto metres = units::distance_cast<units::metres>(1_km);
 		EXPECT_NEAR(1000, metres.count(), 0.0000001);
 	}
 
-	TEST_F(DistanceCastTest, Cast_WhenCastingFromHalfUnitToWhole_WillRoundDown)
+	TEST_F(DistanceCastTest, DistanceCast_WhenCastingFromHalfUnitToWhole_WillRoundDown)
 	{
 		auto kilometres = units::distance_cast<units::distance<int, std::kilo>>(999_m);
 		EXPECT_EQ(0, kilometres.count());
-	}
-
-	TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToYards_WillYieldYards)
-	{
-		auto yards = units::distance_cast<units::yards>(1_m);
-		EXPECT_NEAR(1.09361, yards.count(), 0.00001);
-	}
-
-	TEST_F(DistanceCastTest, Cast_WhenCastingFromKiloMetresToYards_WillYieldYards)
-	{
-		auto yards = units::distance_cast<units::yards>(1_km);
-		EXPECT_NEAR(1093.6133, yards.count(), 0.0001);
-	}
-
-	TEST_F(DistanceCastTest, Cast_WhenCastingFromMetresToFeet_WillYieldFeet)
-	{
-		auto feet = units::distance_cast<units::feet>(1_m);
-		EXPECT_NEAR(3.28084, feet.count(), 0.00001);
-	}
-
-	TEST_F(DistanceCastTest, Cast_WhenCastingFromYardToFeet_WillYieldFeet)
-	{
-		auto feet = units::distance_cast<units::feet>(units::yards{1});
-		EXPECT_NEAR(3.0, feet.count(), 0.0001);
-	}
-
-	TEST_F(DistanceCastTest, Cast_WhenCastingFromYardsToInches_WillYieldInches)
-	{
-		auto inches = units::distance_cast<units::inches>(units::yards{1});
-		EXPECT_NEAR(36.0, inches.count(), 0.0001);
-	}
-
-	TEST_F(DistanceCastTest, Cast_WhenCastingFromKilometresToNanometres_WillYieldNanometres)
-	{
-		auto nanometres = units::distance_cast<units::nanometres>(1_km);
-		EXPECT_NEAR(1000000000000, nanometres.count(), 0.0000001);
 	}
 
 	template <typename T>
