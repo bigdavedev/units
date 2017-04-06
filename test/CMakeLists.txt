@@ -34,9 +34,8 @@ if (UNITS_ENABLE_COVERAGE)
 	coveralls_turn_on_coverage ()
 	
 	get_filename_component (UNITS ../units.h ABSOLUTE)
-	get_filename_component (TEST_DISTANCE test_distance.cpp ABSOLUTE)
 	
-	set (FILES ${UNITS} ${TEST_DISTANCE})
+	set (FILES ${UNITS})
 	
 	coveralls_setup ("${FILES}" ${UNITS_ENABLE_COVERAGE_UPLOAD})
 endif()
