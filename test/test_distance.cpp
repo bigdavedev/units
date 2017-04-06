@@ -14,14 +14,14 @@ namespace TestDistanceUnits
 	namespace conversion_tables
 	{
 		std::unordered_map<std::type_index, double> metric_to_imperial = {
-			{ std::type_index{ typeid(units::thous) }, 39370.078740 },
-			{ std::type_index{ typeid(units::inches) }, 39.370079 },
-			{ std::type_index{ typeid(units::feet) }, 3.280839 },
-			{ std::type_index{ typeid(units::yards) }, 1.093613 },
-			{ std::type_index{ typeid(units::chains) }, 0.049709 },
-			{ std::type_index{ typeid(units::furlongs) }, 0.004970 },
-			{ std::type_index{ typeid(units::miles) }, 0.000621 },
-			{ std::type_index{ typeid(units::leagues) }, 0.000207 }
+		    {std::type_index{typeid(units::thous)}, 39370.078740},
+		    {std::type_index{typeid(units::inches)}, 39.370079},
+		    {std::type_index{typeid(units::feet)}, 3.280839},
+		    {std::type_index{typeid(units::yards)}, 1.093613},
+		    {std::type_index{typeid(units::chains)}, 0.049709},
+		    {std::type_index{typeid(units::furlongs)}, 0.004970},
+		    {std::type_index{typeid(units::miles)}, 0.000621},
+		    {std::type_index{typeid(units::leagues)}, 0.000207}
 		};
 
 		std::unordered_map<std::type_index, units::metres> imperial_to_metric = {
@@ -89,7 +89,6 @@ namespace TestDistanceUnits
 	template <typename T>
 	class MetricToNonMetricConstruction : public UnitConstructorTest
 	{
-	protected:
 	};
 
 	TYPED_TEST_CASE_P(MetricToNonMetricConstruction);
@@ -285,25 +284,25 @@ namespace TestDistanceUnits
 
 	TEST_F(DistanceCastTest, DistanceCast_WhenCastingFromMetresToMetres_WillYieldMetres)
 	{
-		auto metres = units::distance_cast<units::metres>(1000_m);
+		auto metres = units::unit_cast<units::metres>(1000_m);
 		EXPECT_NEAR(1000, metres.count(), 0.0000001);
 	}
 
 	TEST_F(DistanceCastTest, DistanceCast_WhenCastingFromMetresToKiloMetres_WillYieldKilometres)
 	{
-		auto kilometres = units::distance_cast<units::kilometres>(1000_m);
+		auto kilometres = units::unit_cast<units::kilometres>(1000_m);
 		EXPECT_NEAR(1, kilometres.count(), 0.0000001);
 	}
 
 	TEST_F(DistanceCastTest, DistanceCast_WhenCastingFromKilometresToMetres_WillYieldMetres)
 	{
-		auto metres = units::distance_cast<units::metres>(1_km);
+		auto metres = units::unit_cast<units::metres>(1_km);
 		EXPECT_NEAR(1000, metres.count(), 0.0000001);
 	}
 
 	TEST_F(DistanceCastTest, DistanceCast_WhenCastingFromHalfUnitToWhole_WillRoundDown)
 	{
-		auto kilometres = units::distance_cast<units::distance<int, std::kilo>>(999_m);
+		auto kilometres = units::unit_cast<units::distance<int, std::kilo>>(999_m);
 		EXPECT_EQ(0, kilometres.count());
 	}
 
