@@ -162,7 +162,9 @@ namespace units
 {
 	namespace unit_type
 	{
-		struct distance {};
+		struct distance
+		{
+		};
 	}
 
 	template <typename ToDistance, typename Rep, typename Ratio, typename UnitType>
@@ -206,7 +208,7 @@ namespace units
 		rep value;
 	};
 
-	template<typename Rep, typename Ratio = std::ratio<1>>
+	template <typename Rep, typename Ratio = std::ratio<1>>
 	using distance = unit<Rep, Ratio, unit_type::distance>;
 
 	// Useful aliases
@@ -280,6 +282,25 @@ namespace units
 	template <typename Rep1, typename Ratio, typename UnitType, typename Rep2>
 	constexpr auto operator%(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar)
 	    -> typename detail::distance_div_mod<Rep1, Ratio, UnitType, Rep2>::type;
+
+	// Relational operations
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
+	constexpr bool operator==(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs);
+
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
+	constexpr bool operator!=(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs);
+
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
+	constexpr bool operator<(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs);
+
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
+	constexpr bool operator<=(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs);
+
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
+	constexpr bool operator>(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs);
+
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
+	constexpr bool operator>=(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs);
 }
 
 inline namespace literals
@@ -408,8 +429,8 @@ namespace units
 	constexpr auto operator+(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
 	    -> typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type
 	{
-		using unit1   = unit<Rep1, Ratio1, UnitType1>;
-		using unit2   = unit<Rep2, Ratio2, UnitType2>;
+		using unit1       = unit<Rep1, Ratio1, UnitType1>;
+		using unit2       = unit<Rep2, Ratio2, UnitType2>;
 		using common_type = typename std::common_type<unit1, unit2>::type;
 
 		return static_cast<common_type>(static_cast<common_type>(lhs).count()
@@ -425,8 +446,8 @@ namespace units
 	constexpr auto operator-(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
 	    -> typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type
 	{
-		using unit1 = unit<Rep1, Ratio1, UnitType1>;
-		using unit2 = unit<Rep2, Ratio2, UnitType2>;
+		using unit1       = unit<Rep1, Ratio1, UnitType1>;
+		using unit2       = unit<Rep2, Ratio2, UnitType2>;
 		using common_type = typename std::common_type<unit1, unit2>::type;
 
 		return static_cast<common_type>(static_cast<common_type>(lhs).count()
@@ -436,7 +457,7 @@ namespace units
 	template <
 	    typename Rep1,
 	    typename Ratio,
-		typename UnitType,
+	    typename UnitType,
 	    typename Rep2>
 	constexpr auto operator*(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar)
 	    -> unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>
@@ -449,7 +470,7 @@ namespace units
 	    typename Rep1,
 	    typename Rep2,
 	    typename Ratio,
-		typename UnitType>
+	    typename UnitType>
 	constexpr auto operator*(Rep1 const scalar, unit<Rep2, Ratio, UnitType> rhs)
 	    -> unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>
 	{
@@ -460,7 +481,7 @@ namespace units
 	template <
 	    typename Rep1,
 	    typename Ratio,
-		typename UnitType,
+	    typename UnitType,
 	    typename Rep2>
 	constexpr auto operator/(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar)
 	    -> unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>
@@ -479,8 +500,8 @@ namespace units
 	constexpr auto operator%(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
 	    -> typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type
 	{
-		using unit1   = unit<Rep1, Ratio1, UnitType1>;
-		using unit2   = unit<Rep2, Ratio2, UnitType2>;
+		using unit1       = unit<Rep1, Ratio1, UnitType1>;
+		using unit2       = unit<Rep2, Ratio2, UnitType2>;
 		using common_type = typename std::common_type<unit1, unit2>::type;
 
 		return common_type{common_type{lhs}.count() % common_type{rhs}.count()};
@@ -489,13 +510,110 @@ namespace units
 	template <
 	    typename Rep1,
 	    typename Ratio,
-		typename UnitType,
+	    typename UnitType,
 	    typename Rep2>
 	constexpr auto operator%(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar)
 	    -> typename detail::distance_div_mod<Rep1, Ratio, UnitType, Rep2>::type
 	{
 		using result_type = unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>;
 		return result_type{result_type{lhs}.count() % result_type{static_cast<typename result_type::rep>(scalar)}.count()};
+	}
+
+	// Relational operations
+	template <
+	    typename Rep1,
+	    typename Ratio1,
+	    typename UnitType1,
+	    typename Rep2,
+	    typename Ratio2,
+	    typename UnitType2>
+	constexpr bool operator==(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
+	{
+		using unit1       = unit<Rep1, Ratio1, UnitType1>;
+		using unit2       = unit<Rep2, Ratio2, UnitType2>;
+		using common_type = typename std::common_type<unit1, unit2>::type;
+
+		return unit_cast<common_type>(lhs).count() == unit_cast<common_type>(rhs).count() || std::abs(unit_cast<common_type>(lhs).count() - unit_cast<common_type>(rhs).count()) < std::abs(std::min(unit_cast<common_type>(lhs).count(), unit_cast<common_type>(rhs).count())) * std::numeric_limits<double>::epsilon();
+	}
+
+	template <
+	    typename Rep1,
+	    typename Ratio1,
+	    typename UnitType1,
+	    typename Rep2,
+	    typename Ratio2,
+	    typename UnitType2>
+	constexpr bool operator!=(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
+	{
+		using unit1       = unit<Rep1, Ratio1, UnitType1>;
+		using unit2       = unit<Rep2, Ratio2, UnitType2>;
+		using common_type = typename std::common_type<unit1, unit2>::type;
+
+		return !(lhs == rhs);
+	}
+
+	template <
+	    typename Rep1,
+	    typename Ratio1,
+	    typename UnitType1,
+	    typename Rep2,
+	    typename Ratio2,
+	    typename UnitType2>
+	constexpr bool operator<(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
+	{
+		using unit1 = unit<Rep1, Ratio1, UnitType1>;
+		using unit2 = unit<Rep2, Ratio2, UnitType2>;
+		using common_type = typename std::common_type<unit1, unit2>::type;
+
+		return std::isless(unit_cast<common_type>(lhs).count(), unit_cast<common_type>(rhs).count());
+	}
+
+	template <
+	    typename Rep1,
+	    typename Ratio1,
+	    typename UnitType1,
+	    typename Rep2,
+	    typename Ratio2,
+	    typename UnitType2>
+	constexpr bool operator<=(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
+	{
+		using unit1 = unit<Rep1, Ratio1, UnitType1>;
+		using unit2 = unit<Rep2, Ratio2, UnitType2>;
+		using common_type = typename std::common_type<unit1, unit2>::type;
+
+		return std::islessequal(unit_cast<common_type>(lhs).count(), unit_cast<common_type>(rhs).count());
+	}
+
+	template <
+	    typename Rep1,
+	    typename Ratio1,
+	    typename UnitType1,
+	    typename Rep2,
+	    typename Ratio2,
+	    typename UnitType2>
+	constexpr bool operator>(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
+	{
+		using unit1 = unit<Rep1, Ratio1, UnitType1>;
+		using unit2 = unit<Rep2, Ratio2, UnitType2>;
+		using common_type = typename std::common_type<unit1, unit2>::type;
+
+		return std::isgreater(unit_cast<common_type>(lhs).count(), unit_cast<common_type>(rhs).count());
+	}
+
+	template <
+	    typename Rep1,
+	    typename Ratio1,
+	    typename UnitType1,
+	    typename Rep2,
+	    typename Ratio2,
+	    typename UnitType2>
+	constexpr bool operator>=(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
+	{
+		using unit1 = unit<Rep1, Ratio1, UnitType1>;
+		using unit2 = unit<Rep2, Ratio2, UnitType2>;
+		using common_type = typename std::common_type<unit1, unit2>::type;
+
+		return std::isgreaterequal(unit_cast<common_type>(lhs).count(), unit_cast<common_type>(rhs).count());
 	}
 
 	namespace detail
@@ -563,10 +681,10 @@ namespace units
 	{
 		static_assert(std::is_same<typename ToUnit::unit_type, UnitType>::value, "Incompatible types");
 
-		using ToRatio   = typename ToUnit::ratio;
-		using ToRep      = typename ToUnit::rep;
-		using CommonType = typename std::common_type<ToRep, Rep, intmax_t>::type;
-		using CommonRatio      = std::ratio_divide<ToRatio, Ratio>;
+		using ToRatio     = typename ToUnit::ratio;
+		using ToRep       = typename ToUnit::rep;
+		using CommonType  = typename std::common_type<ToRep, Rep, intmax_t>::type;
+		using CommonRatio = std::ratio_divide<ToRatio, Ratio>;
 
 		return detail::unit_cast<ToUnit,
 		                         CommonRatio,

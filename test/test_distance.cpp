@@ -278,6 +278,80 @@ namespace TestDistanceUnits
 		EXPECT_EQ(531, result.count());
 	}
 
+	class UnitRelationalOperationsTest : public Test
+	{
+	};
+
+	TEST_F(UnitRelationalOperationsTest, EqualityOperator_WhenOperandsAreEqual_WillReturnTrue)
+	{
+		EXPECT_TRUE(1_m == 1_m);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, EqualityOperator_WhenOperandsArIneEqual_WillReturnFalse)
+	{
+		EXPECT_FALSE(1_m == 999999999_nm);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, InqualityOperator_WhenOperandsAreInequal_WillReturnTrue)
+	{
+		EXPECT_TRUE(1_m != 999999999_nm);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, InqualityOperator_WhenOperandsAreEqual_WillReturnFalse)
+	{
+		EXPECT_FALSE(1_m != 1_m);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, LessThanOperator_WhenLeftHandOperandIsSmaller_WillReturnTrue)
+	{
+		EXPECT_TRUE(999999999_nm < 1_m);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, LessThanOperator_WhenLeftHandOperandIsGreater_WillReturnFalse)
+	{
+		EXPECT_FALSE(1_m < 999999999_nm);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, LessThanEqualOperator_WhenLeftHandOperandIsSmaller_WillReturnTrue)
+	{
+		EXPECT_TRUE(999999999_nm <= 1_m);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, LessThanEqualOperator_WhenOperandsAreEqual_WillReturnTrue)
+	{
+		EXPECT_TRUE(1_m <= 1_m);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, LessThanEqualOperator_WhenLeftHandOperandIsGreater_WillReturnFalse)
+	{
+		EXPECT_FALSE(1_m <= 999999999_nm);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, GreaterThanOperator_WhenLeftHandOperandIsSmaller_WillReturnFalse)
+	{
+		EXPECT_FALSE(999999999_nm > 1_m);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, GreatersThanOperator_WhenLeftHandOperandIsGreater_WillReturnTrue)
+	{
+		EXPECT_TRUE(1_m > 999999999_nm);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, GreaterThanEqualOperator_WhenOperandsAreEqual_WillReturnTrue)
+	{
+		EXPECT_TRUE(1_m >= 1_m);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, GreaterThanEqualOperator_WhenLeftHandOperandIsGreater_WillReturnTrue)
+	{
+		EXPECT_TRUE(1_m >= 999999999_nm);
+	}
+
+	TEST_F(UnitRelationalOperationsTest, GreaterThanEqualOperator_WhenLeftHandOperandIsSmaller_WillReturnFalse)
+	{
+		EXPECT_FALSE(999999999_nm >= 1_m);
+	}
+
 	class DistanceCastTest : public Test
 	{
 	};
