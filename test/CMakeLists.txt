@@ -38,8 +38,5 @@ if (UNITS_ENABLE_COVERAGE)
 	
 	set (FILES ${UNITS} ${TEST_DISTANCE})
 	
-	coveralls_setup (${FILES}
-		${UNITS_ENABLE_COVERAGE_UPLOAD}
-		"${CMAKE_SOURCE_DIR}/external/JoakimSoderberg/coveralls-cmake/cmake"
-	)
+	coveralls_setup ("${FILES}" ${UNITS_ENABLE_COVERAGE_UPLOAD})
 endif()
