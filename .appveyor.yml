@@ -13,7 +13,7 @@ environment:
   matrix:
     - GENERATOR: Visual Studio 14 2015 Win64
     - GENERATOR: Visual Studio 14 2015
-    - GENERATOR: MinGW Makefiles
+  #  - GENERATOR: MinGW Makefiles
 
 before_build:
   - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
