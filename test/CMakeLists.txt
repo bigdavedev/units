@@ -16,8 +16,13 @@ add_dependencies ( ${TARGET_NAME} gtest_main )
 include_directories (SYSTEM ${CMAKE_SOURCE_DIR}/external/googletest/googletest/include)
 include_directories (${CMAKE_SOURCE_DIR})
 
+set (EXTRA_LIBRARIES)
+if (NOT WIN32)
+	list (APPEND EXTRA_LIBRARIES -pthread)
+endif ()
+
 target_link_libraries (${TARGET_NAME}
-	-pthread
+	${EXTRA_LIBRARIES}
 	gtest_main
 )
 
@@ -32,7 +37,7 @@ if (UNITS_ENABLE_COVERAGE)
 	)
 	include (Coveralls)
 	coveralls_turn_on_coverage ()
-	coveralls_setup (../units.h
+	coveralls_setup (${CMAKE_SOURCE_DIR}/units.h
 		${UNITS_ENABLE_COVERAGE_UPLOAD}
 		"${CMAKE_SOURCE_DIR}/external/JoakimSoderberg/coveralls-cmake/cmake"
 	)
