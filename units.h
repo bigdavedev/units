@@ -140,7 +140,7 @@ namespace std
 		using gcd_den    = units::detail::greatest_common_divisor<Ratio1::den, Ratio2::den>;
 		using common_rep = typename CommonRep::type;
 		using ratio      = std::ratio<gcd_num::value, (Ratio1::den / gcd_den::value) * Ratio2::den>;
-		using unit_type  = typename UnitType;
+		using unit_type  = UnitType;
 
 	public:
 		using type = units::unit<common_rep, ratio, unit_type>;
@@ -150,7 +150,7 @@ namespace std
 	struct common_type<units::unit<Rep1, Ratio1, UnitType1>,
 	                   units::unit<Rep2, Ratio2, UnitType2>>
 	{
-		static_assert(std::is_same<typename UnitType1, typename UnitType2>::value, "Incompatible unit types");
+		static_assert(std::is_same<UnitType1, UnitType2>::value, "Incompatible unit types");
 		using type = typename distance_common_type<std::common_type<Rep1, Rep2>,
 		                                           Ratio1,
 		                                           Ratio2,
@@ -185,7 +185,7 @@ namespace units
 		constexpr unit(unit<Rep2, Ratio2, UnitType2> dist)
 		    : value{unit_cast<unit<rep, ratio, unit_type>>(dist).count()}
 		{
-			static_assert(std::is_same<unit_type, typename UnitType2>::value, "Unit types are not compatible");
+			static_assert(std::is_same<unit_type, UnitType2>::value, "Unit types are not compatible");
 		}
 
 		constexpr rep count() const;
