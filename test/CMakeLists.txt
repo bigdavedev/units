@@ -32,7 +32,7 @@ if (UNITS_ENABLE_COVERAGE)
 	)
 	include (Coveralls)
 	coveralls_turn_on_coverage ()
-	coveralls_setup (../units.h
+	coveralls_setup (${CMAKE_SOURCE_DIR}/units.h
 		${UNITS_ENABLE_COVERAGE_UPLOAD}
 		"${CMAKE_SOURCE_DIR}/external/JoakimSoderberg/coveralls-cmake/cmake"
 	)
