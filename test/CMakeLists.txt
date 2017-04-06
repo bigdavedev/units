@@ -32,8 +32,11 @@ if (UNITS_ENABLE_COVERAGE)
 	)
 	include (Coveralls)
 	coveralls_turn_on_coverage ()
-	coveralls_setup (${CMAKE_SOURCE_DIR}/units.h
-		${UNITS_ENABLE_COVERAGE_UPLOAD}
-		"${CMAKE_SOURCE_DIR}/external/JoakimSoderberg/coveralls-cmake/cmake"
-	)
+	
+	get_filename_component (UNITS ../units.h ABSOLUTE)
+	get_filename_component (TEST_DISTANCE test_distance.cpp ABSOLUTE)
+	
+	set (FILES ${UNITS} ${TEST_DISTANCE})
+	
+	coveralls_setup (${FILES} ${UNITS_ENABLE_COVERAGE_UPLOAD})
 endif()
