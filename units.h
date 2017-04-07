@@ -193,6 +193,9 @@ namespace units
 
 		constexpr rep count() const;
 
+		constexpr std::common_type_t<unit> operator+() const;
+		constexpr std::common_type_t<unit> operator-() const;
+
 		unit& operator++();
 		unit operator++(int);
 		unit& operator--();
@@ -353,6 +356,18 @@ namespace units
 	constexpr typename unit<Rep, Ratio, UnitType>::rep unit<Rep, Ratio, UnitType>::count() const
 	{
 		return value;
+	}
+
+	template <typename Rep, typename Ratio, typename UnitType>
+	constexpr std::common_type_t<unit<Rep, Ratio, UnitType>> unit<Rep, Ratio, UnitType>::operator+() const
+	{
+		return (*this);
+	}
+
+	template <typename Rep, typename Ratio, typename UnitType>
+	constexpr std::common_type_t<unit<Rep, Ratio, UnitType>> unit<Rep, Ratio, UnitType>::operator-() const
+	{
+		return unit<Rep, Ratio, UnitType>{0 - value};
 	}
 
 	template <typename Rep, typename Ratio, typename UnitType>

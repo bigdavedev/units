@@ -132,6 +132,36 @@ namespace TestDistanceUnits
 		units::metres distance{ 1 };
 	};
 
+	class UnitUnaryOperatorTest : public UnitBaseTest
+	{
+	};
+
+	TEST_F(UnitUnaryOperatorTest, UnaryMinus_WhenValueIsPositive_WillReturnNegativeValue)
+	{
+		auto result = -distance;
+		EXPECT_EQ(-1, result.count());
+	}
+
+	TEST_F(UnitUnaryOperatorTest, UnaryMinus_WhenValueIsNegative_WillReturnPositiveValue)
+	{
+		distance = units::metres{ -1 };
+		auto result = -distance;
+		EXPECT_EQ(1, result.count());
+	}
+
+	TEST_F(UnitUnaryOperatorTest, UnaryPlus_WhenValueIsPositive_WillReturnPositiveValue)
+	{
+		auto result = +distance;
+		EXPECT_EQ(1, result.count());
+	}
+
+	TEST_F(UnitUnaryOperatorTest, UnaryPlus_WhenValueIsNegative_WillReturnNegativeValue)
+	{
+		distance = units::metres{ -1 };
+		auto result = +distance;
+		EXPECT_EQ(-1, result.count());
+	}
+
 	class UnitIncrementDecrementTest : public UnitBaseTest
 	{
 	};
