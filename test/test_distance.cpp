@@ -13,34 +13,32 @@ namespace TestDistanceUnits
 {
 	namespace conversion_tables
 	{
-		std::unordered_map<std::type_index, double> metric_to_imperial_lengths = {
-		    {std::type_index{typeid(units::thous)}, 39370.078740158},
-		    {std::type_index{typeid(units::inches)}, 39.37007874},
-		    {std::type_index{typeid(units::links)}, 4.970969538},
-		    {std::type_index{typeid(units::feet)}, 3.280839895},
-		    {std::type_index{typeid(units::yards)}, 1.093613298},
-		    {std::type_index{typeid(units::rods)}, 0.198838782},
-		    {std::type_index{typeid(units::chains)}, 0.049709695},
-		    {std::type_index{typeid(units::furlongs)}, 0.004970969},
-		    {std::type_index{typeid(units::miles)}, 0.000621372},
-		    {std::type_index{typeid(units::leagues)}, 0.000207124},
+		std::unordered_map<std::type_index, double> metric_to_imperial_lengths
+		    = {{std::type_index{typeid(units::thous)}, 39370.078740158},
+		       {std::type_index{typeid(units::inches)}, 39.37007874},
+		       {std::type_index{typeid(units::links)}, 4.970969538},
+		       {std::type_index{typeid(units::feet)}, 3.280839895},
+		       {std::type_index{typeid(units::yards)}, 1.093613298},
+		       {std::type_index{typeid(units::rods)}, 0.198838782},
+		       {std::type_index{typeid(units::chains)}, 0.049709695},
+		       {std::type_index{typeid(units::furlongs)}, 0.004970969},
+		       {std::type_index{typeid(units::miles)}, 0.000621372},
+		       {std::type_index{typeid(units::leagues)}, 0.000207124},
 
-			// Maritime
-		    {std::type_index{typeid(units::fathoms)}, 0.539611825 },
-		    {std::type_index{typeid(units::cables)}, 0},
-		    {std::type_index{typeid(units::nautical_miles)}, 0}
-		};
+		       // Maritime
+		       {std::type_index{typeid(units::fathoms)}, 0.539611825},
+		       {std::type_index{typeid(units::cables)}, 0},
+		       {std::type_index{typeid(units::nautical_miles)}, 0}};
 
-		std::unordered_map<std::type_index, units::metres> imperial_to_metric = {
-			{std::type_index{typeid(units::thous)}, units::metres{0.0000254}},
-			{std::type_index{typeid(units::inches)}, units::metres{0.0254}},
-			{std::type_index{typeid(units::feet)}, units::metres{0.3048}},
-			{std::type_index{typeid(units::yards)}, units::metres{0.9144}},
-			{std::type_index{typeid(units::chains)}, units::metres{20.1168}},
-			{std::type_index{typeid(units::furlongs)}, units::metres{201.168}},
-			{std::type_index{typeid(units::miles)}, units::metres{1609.344}},
-			{std::type_index{typeid(units::leagues)}, units::metres{4828.032}}
-		};
+		std::unordered_map<std::type_index, units::metres> imperial_to_metric
+		    = {{std::type_index{typeid(units::thous)}, units::metres{0.0000254}},
+		       {std::type_index{typeid(units::inches)}, units::metres{0.0254}},
+		       {std::type_index{typeid(units::feet)}, units::metres{0.3048}},
+		       {std::type_index{typeid(units::yards)}, units::metres{0.9144}},
+		       {std::type_index{typeid(units::chains)}, units::metres{20.1168}},
+		       {std::type_index{typeid(units::furlongs)}, units::metres{201.168}},
+		       {std::type_index{typeid(units::miles)}, units::metres{1609.344}},
+		       {std::type_index{typeid(units::leagues)}, units::metres{4828.032}}};
 	}
 
 	class UnitConstructorTest : public Test
@@ -59,7 +57,8 @@ namespace TestDistanceUnits
 		EXPECT_EQ(1000_m, metres);
 	}
 
-	class NonMetricToMetricConstruction : public UnitConstructorTest, public WithParamInterface<std::tuple<units::metres, units::metres>>
+	class NonMetricToMetricConstruction : public UnitConstructorTest,
+	                                      public WithParamInterface<std::tuple<units::metres, units::metres>>
 	{
 	};
 
@@ -83,8 +82,8 @@ namespace TestDistanceUnits
 	                        NonMetricToMetricConstruction,
 	                        Values(std::make_tuple(1_ftm, units::metres{1.853184}),
 	                               std::make_tuple(1_cb, units::metres{185.3184}),
-								   std::make_tuple(1_NM, units::metres{ 1853.184 }),
-								   std::make_tuple(1_nmi, units::metres{ 1853.184 })));
+	                               std::make_tuple(1_NM, units::metres{1853.184}),
+	                               std::make_tuple(1_nmi, units::metres{1853.184})));
 
 	INSTANTIATE_TEST_CASE_P(AstronomicalToMetric,
 	                        NonMetricToMetricConstruction,
@@ -121,7 +120,8 @@ namespace TestDistanceUnits
 
 	using MaritimeDistanceTypesTuple = Types<units::fathoms, units::cables, units::nautical_miles>;
 
-	REGISTER_TYPED_TEST_CASE_P(MetricToNonMetricConstruction, Contructor_WhenGivenConvertibleType_WillYieldCorrectConversion);
+	REGISTER_TYPED_TEST_CASE_P(MetricToNonMetricConstruction,
+	                           Contructor_WhenGivenConvertibleType_WillYieldCorrectConversion);
 
 	INSTANTIATE_TYPED_TEST_CASE_P(Imperial, MetricToNonMetricConstruction, ImperialDistanceTypesTuple);
 	INSTANTIATE_TYPED_TEST_CASE_P(Maritime, MetricToNonMetricConstruction, MaritimeDistanceTypesTuple);
@@ -129,7 +129,7 @@ namespace TestDistanceUnits
 	class UnitBaseTest : public Test
 	{
 	protected:
-		units::metres distance{ 1 };
+		units::metres distance{1};
 	};
 
 	class UnitUnaryOperatorTest : public UnitBaseTest
@@ -144,7 +144,7 @@ namespace TestDistanceUnits
 
 	TEST_F(UnitUnaryOperatorTest, UnaryMinus_WhenValueIsNegative_WillReturnPositiveValue)
 	{
-		distance = units::metres{ -1 };
+		distance    = units::metres{-1};
 		auto result = -distance;
 		EXPECT_EQ(1, result.count());
 	}
@@ -157,7 +157,7 @@ namespace TestDistanceUnits
 
 	TEST_F(UnitUnaryOperatorTest, UnaryPlus_WhenValueIsNegative_WillReturnNegativeValue)
 	{
-		distance = units::metres{ -1 };
+		distance    = units::metres{-1};
 		auto result = +distance;
 		EXPECT_EQ(-1, result.count());
 	}
@@ -198,25 +198,30 @@ namespace TestDistanceUnits
 	{
 	};
 
-	TEST_F(UnitCompoundAssignmentTest, CompoundAdditionAssignment_WhenAddingMetresToMetres_WillResultInMetresAddedToCurrentMetres)
+	TEST_F(UnitCompoundAssignmentTest,
+	       CompoundAdditionAssignment_WhenAddingMetresToMetres_WillResultInMetresAddedToCurrentMetres)
 	{
 		distance += 1_m;
 		EXPECT_EQ(2_m, distance);
 	}
 
-	TEST_F(UnitCompoundAssignmentTest, CompoundAdditionAssignment_WhenAddingKilometresToMetres_WillResultInKilometresAddedToCurrentMetres)
+	TEST_F(UnitCompoundAssignmentTest,
+	       CompoundAdditionAssignment_WhenAddingKilometresToMetres_WillResultInKilometresAddedToCurrentMetres)
 	{
 		distance += 1_km;
 		EXPECT_EQ(1001_m, distance);
 	}
 
-	TEST_F(UnitCompoundAssignmentTest, CompoundSubtractionAssignment_WhenSubtractingMetresFromMetres_WillResultInMetresSubtractedToCurrentMetres)
+	TEST_F(UnitCompoundAssignmentTest,
+	       CompoundSubtractionAssignment_WhenSubtractingMetresFromMetres_WillResultInMetresSubtractedToCurrentMetres)
 	{
 		distance -= 1_m;
 		EXPECT_EQ(0_m, distance);
 	}
 
-	TEST_F(UnitCompoundAssignmentTest, CompoundSubtractionAssignment_WhenSubtractingKilometresFromMetres_WillResultInKilometresSubtractedToCurrentMetres)
+	TEST_F(
+	    UnitCompoundAssignmentTest,
+	    CompoundSubtractionAssignment_WhenSubtractingKilometresFromMetres_WillResultInKilometresSubtractedToCurrentMetres)
 	{
 		distance -= 1_km;
 		EXPECT_EQ(-999, distance.count());
@@ -447,7 +452,9 @@ namespace TestDistanceUnits
 
 	REGISTER_TYPED_TEST_CASE_P(BritishVsAmericanSpellingTest, EitherSpellingYieldsSameType);
 
-	INSTANTIATE_TYPED_TEST_CASE_P(BritishVsAmericanSpelling, BritishVsAmericanSpellingTest, BritishVsAmericanSpellingTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(BritishVsAmericanSpelling,
+	                              BritishVsAmericanSpellingTest,
+	                              BritishVsAmericanSpellingTuple);
 
 	template <typename T>
 	class LiteralsTest : public Test
