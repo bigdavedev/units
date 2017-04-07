@@ -13,15 +13,22 @@ namespace TestDistanceUnits
 {
 	namespace conversion_tables
 	{
-		std::unordered_map<std::type_index, double> metric_to_imperial = {
-		    {std::type_index{typeid(units::thous)}, 39370.078740},
-		    {std::type_index{typeid(units::inches)}, 39.370079},
-		    {std::type_index{typeid(units::feet)}, 3.280839},
-		    {std::type_index{typeid(units::yards)}, 1.093613},
-		    {std::type_index{typeid(units::chains)}, 0.049709},
-		    {std::type_index{typeid(units::furlongs)}, 0.004970},
-		    {std::type_index{typeid(units::miles)}, 0.000621},
-		    {std::type_index{typeid(units::leagues)}, 0.000207}
+		std::unordered_map<std::type_index, double> metric_to_imperial_lengths = {
+		    {std::type_index{typeid(units::thous)}, 39370.078740158},
+		    {std::type_index{typeid(units::inches)}, 39.37007874},
+		    {std::type_index{typeid(units::links)}, 4.970969538},
+		    {std::type_index{typeid(units::feet)}, 3.280839895},
+		    {std::type_index{typeid(units::yards)}, 1.093613298},
+		    {std::type_index{typeid(units::rods)}, 0.198838782},
+		    {std::type_index{typeid(units::chains)}, 0.049709695},
+		    {std::type_index{typeid(units::furlongs)}, 0.004970969},
+		    {std::type_index{typeid(units::miles)}, 0.000621372},
+		    {std::type_index{typeid(units::leagues)}, 0.000207124},
+
+			// Maritime
+		    {std::type_index{typeid(units::fathoms)}, 0.539611825 },
+		    {std::type_index{typeid(units::cables)}, 0},
+		    {std::type_index{typeid(units::nautical_miles)}, 0}
 		};
 
 		std::unordered_map<std::type_index, units::metres> imperial_to_metric = {
@@ -43,13 +50,13 @@ namespace TestDistanceUnits
 	TEST_F(UnitConstructorTest, Constructor_WhenInvoked_WillInitialise)
 	{
 		units::metres metres{1};
-		EXPECT_EQ(1, metres.count());
+		EXPECT_EQ(1_m, metres);
 	}
 
 	TEST_F(UnitConstructorTest, Constructor_WhenInokedWithDifferentCompatibleUnit_WillConvertToCurrentUnit)
 	{
 		units::metres metres{1_km};
-		EXPECT_EQ(1000, metres.count());
+		EXPECT_EQ(1000_m, metres);
 	}
 
 	class NonMetricToMetricConstruction : public UnitConstructorTest, public WithParamInterface<std::tuple<units::metres, units::metres>>
@@ -75,8 +82,9 @@ namespace TestDistanceUnits
 	INSTANTIATE_TEST_CASE_P(MaritimeToMetric,
 	                        NonMetricToMetricConstruction,
 	                        Values(std::make_tuple(1_ftm, units::metres{1.853184}),
-	                               std::make_tuple(units::cables{1}, units::metres{185.3184}),
-	                               std::make_tuple(units::nautical_miles{1}, units::metres{1853.184})));
+	                               std::make_tuple(1_cb, units::metres{185.3184}),
+								   std::make_tuple(1_NM, units::metres{ 1853.184 }),
+								   std::make_tuple(1_nmi, units::metres{ 1853.184 })));
 
 	INSTANTIATE_TEST_CASE_P(AstronomicalToMetric,
 	                        NonMetricToMetricConstruction,
@@ -95,23 +103,28 @@ namespace TestDistanceUnits
 
 	TYPED_TEST_P(MetricToNonMetricConstruction, Contructor_WhenGivenConvertibleType_WillYieldCorrectConversion)
 	{
-		auto expected = conversion_tables::metric_to_imperial[std::type_index{typeid(TypeParam)}];
-		auto actual   = TypeParam{1_m}.count();
-		EXPECT_NEAR(expected, actual, 0.000001);
+		auto expected = TypeParam{conversion_tables::metric_to_imperial_lengths[std::type_index{typeid(TypeParam)}]};
+		auto actual   = TypeParam{1_m};
+		EXPECT_EQ(expected, actual) << expected.count() << " != " << actual.count();
 	}
 
-	using ImperialTypesTuple = Types<units::thous,
-	                                 units::inches,
-	                                 units::feet,
-	                                 units::yards,
-	                                 units::chains,
-	                                 units::furlongs,
-	                                 units::miles,
-	                                 units::leagues>;
+	using ImperialDistanceTypesTuple = Types<units::thous,
+	                                         units::inches,
+	                                         units::links,
+	                                         units::feet,
+	                                         units::yards,
+	                                         units::rods,
+	                                         units::chains,
+	                                         units::furlongs,
+	                                         units::miles,
+	                                         units::leagues>;
+
+	using MaritimeDistanceTypesTuple = Types<units::fathoms, units::cables, units::nautical_miles>;
 
 	REGISTER_TYPED_TEST_CASE_P(MetricToNonMetricConstruction, Contructor_WhenGivenConvertibleType_WillYieldCorrectConversion);
 
-	INSTANTIATE_TYPED_TEST_CASE_P(Metric, MetricToNonMetricConstruction, ImperialTypesTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Imperial, MetricToNonMetricConstruction, ImperialDistanceTypesTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Maritime, MetricToNonMetricConstruction, MaritimeDistanceTypesTuple);
 
 	class UnitBaseTest : public Test
 	{
@@ -126,29 +139,29 @@ namespace TestDistanceUnits
 	TEST_F(UnitIncrementDecrementTest, PreIncrementOperator_WillIncrementDistanceByOne)
 	{
 		auto result = ++distance;
-		EXPECT_EQ(2, distance.count());
-		EXPECT_EQ(2, result.count());
+		EXPECT_EQ(2_m, distance);
+		EXPECT_EQ(2_m, result);
 	}
 
 	TEST_F(UnitIncrementDecrementTest, PostIncrementOperator_WillIncrementDistanceByOne)
 	{
 		auto result = distance++;
-		EXPECT_EQ(2, distance.count());
-		EXPECT_EQ(1, result.count());
+		EXPECT_EQ(2_m, distance);
+		EXPECT_EQ(1_m, result);
 	}
 
 	TEST_F(UnitIncrementDecrementTest, PreDecrementOperator_WillDecrementDistanceByOne)
 	{
 		auto result = --distance;
-		EXPECT_EQ(0, distance.count());
-		EXPECT_EQ(0, result.count());
+		EXPECT_EQ(0_m, distance);
+		EXPECT_EQ(0_m, result);
 	}
 
 	TEST_F(UnitIncrementDecrementTest, PostDecrementOperator_WillDecrementDistanceByOne)
 	{
 		auto result = distance--;
-		EXPECT_EQ(0, distance.count());
-		EXPECT_EQ(1, result.count());
+		EXPECT_EQ(0_m, distance);
+		EXPECT_EQ(1_m, result);
 	}
 
 	class UnitCompoundAssignmentTest : public UnitBaseTest
@@ -158,19 +171,19 @@ namespace TestDistanceUnits
 	TEST_F(UnitCompoundAssignmentTest, CompoundAdditionAssignment_WhenAddingMetresToMetres_WillResultInMetresAddedToCurrentMetres)
 	{
 		distance += 1_m;
-		EXPECT_EQ(2, distance.count());
+		EXPECT_EQ(2_m, distance);
 	}
 
 	TEST_F(UnitCompoundAssignmentTest, CompoundAdditionAssignment_WhenAddingKilometresToMetres_WillResultInKilometresAddedToCurrentMetres)
 	{
 		distance += 1_km;
-		EXPECT_EQ(1001, distance.count());
+		EXPECT_EQ(1001_m, distance);
 	}
 
 	TEST_F(UnitCompoundAssignmentTest, CompoundSubtractionAssignment_WhenSubtractingMetresFromMetres_WillResultInMetresSubtractedToCurrentMetres)
 	{
 		distance -= 1_m;
-		EXPECT_EQ(0, distance.count());
+		EXPECT_EQ(0_m, distance);
 	}
 
 	TEST_F(UnitCompoundAssignmentTest, CompoundSubtractionAssignment_WhenSubtractingKilometresFromMetres_WillResultInKilometresSubtractedToCurrentMetres)
@@ -182,42 +195,42 @@ namespace TestDistanceUnits
 	TEST_F(UnitCompoundAssignmentTest, CompoundMultiplicationAssignment_WhenMultiplyingByScalar_WillUpdateValue)
 	{
 		distance *= 10;
-		EXPECT_EQ(10, distance.count());
+		EXPECT_EQ(10_m, distance);
 	}
 
 	TEST_F(UnitCompoundAssignmentTest, CompoundDivisionAssignment_WhenDividingByScalar_WillUpdateValue)
 	{
 		distance = 10_m;
 		distance /= 2;
-		EXPECT_EQ(5, distance.count());
+		EXPECT_EQ(5_m, distance);
 	}
 
 	TEST_F(UnitCompoundAssignmentTest, CompoundRemainderAssignment_WhenGettingRemainderByScalar_WillUpdateValue)
 	{
 		distance = 2531_m;
 		distance %= 1000;
-		EXPECT_EQ(531, distance.count());
+		EXPECT_EQ(531_m, distance);
 	}
 
 	TEST_F(UnitCompoundAssignmentTest, CompoundRemainderAssignment_WhenGettingRemainderByDistance_WillUpdateValue)
 	{
 		distance = 2531_m;
 		distance %= 1_km;
-		EXPECT_EQ(531, distance.count());
+		EXPECT_EQ(531_m, distance);
 	}
 
 	TEST_F(UnitCompoundAssignmentTest, CompoundRemainderAssignment_WhenGettingRemainderByIntScalar_WillUpdateValue)
 	{
 		distance = units::distance<int>{2531};
 		distance %= 1000;
-		EXPECT_EQ(531, distance.count());
+		EXPECT_EQ(531_m, distance);
 	}
 
 	TEST_F(UnitCompoundAssignmentTest, CompoundRemainderAssignment_WhenGettingRemainderByIntDistance_WillUpdateValue)
 	{
 		distance = units::distance<int>{2531};
 		distance %= 1_km;
-		EXPECT_EQ(531, distance.count());
+		EXPECT_EQ(531_m, distance);
 	}
 
 	class UnitArithmeticOperationsTest : public Test
@@ -227,55 +240,55 @@ namespace TestDistanceUnits
 	TEST_F(UnitArithmeticOperationsTest, OperatorPlus_WillAddMetresToMetres)
 	{
 		auto result = 1_m + 1_m;
-		EXPECT_EQ(2, result.count());
+		EXPECT_EQ(2_m, result);
 	}
 
 	TEST_F(UnitArithmeticOperationsTest, OperatorPlus_WillAddKilometresToMetres)
 	{
 		auto result = 1_m + 1_km;
-		EXPECT_EQ(1001, result.count());
+		EXPECT_EQ(1001_m, result);
 	}
 
 	TEST_F(UnitArithmeticOperationsTest, OperatorMinus_WillSubtractMetresFromMetres)
 	{
 		auto result = 1_m - 1_m;
-		EXPECT_EQ(0, result.count());
+		EXPECT_EQ(0_m, result);
 	}
 
 	TEST_F(UnitArithmeticOperationsTest, OperatorMinus_WillSubtractMetresFromKilometres)
 	{
 		auto result = 1_km - 1_m;
-		EXPECT_EQ(999, result.count());
+		EXPECT_EQ(999_m, result);
 	}
 
 	TEST_F(UnitArithmeticOperationsTest, OperatorMultiply_WillMultiplyMetresToScalar)
 	{
 		auto result = 1_m * 2;
-		EXPECT_EQ(2, result.count());
+		EXPECT_EQ(2_m, result);
 	}
 
 	TEST_F(UnitArithmeticOperationsTest, OperatorMultiply_WillMultiplyScalarToMetres)
 	{
 		auto result = 2 * 1_m;
-		EXPECT_EQ(2, result.count());
+		EXPECT_EQ(2_m, result);
 	}
 
 	TEST_F(UnitArithmeticOperationsTest, OperatorDivide_WillDivideMetresByScalar)
 	{
 		auto result = 2_m / 2;
-		EXPECT_EQ(1, result.count());
+		EXPECT_EQ(1_m, result);
 	}
 
 	TEST_F(UnitArithmeticOperationsTest, OperatorRemainderInt_WhenGettingRemainderByDistance_WillGiveRemainder)
 	{
 		auto const result = units::distance<int>{2531} % units::distance<int, std::kilo>{1};
-		EXPECT_EQ(531, result.count());
+		EXPECT_EQ(531_m, result);
 	}
 
 	TEST_F(UnitArithmeticOperationsTest, OperatorRemainderInt_WhenGettingRemainderByScalar_WillGiveRemainder)
 	{
 		auto const result = units::distance<int>{2531} % 1000;
-		EXPECT_EQ(531, result.count());
+		EXPECT_EQ(531_m, result);
 	}
 
 	class UnitRelationalOperationsTest : public Test
@@ -352,32 +365,32 @@ namespace TestDistanceUnits
 		EXPECT_FALSE(999999999_nm >= 1_m);
 	}
 
-	class DistanceCastTest : public Test
+	class UnitCastTest : public Test
 	{
 	};
 
-	TEST_F(DistanceCastTest, DistanceCast_WhenCastingFromMetresToMetres_WillYieldMetres)
+	TEST_F(UnitCastTest, UnitCast_WhenCastingFromMetresToMetres_WillYieldMetres)
 	{
 		auto metres = units::unit_cast<units::metres>(1000_m);
-		EXPECT_NEAR(1000, metres.count(), 0.0000001);
+		EXPECT_EQ(1000_m, metres);
 	}
 
-	TEST_F(DistanceCastTest, DistanceCast_WhenCastingFromMetresToKiloMetres_WillYieldKilometres)
+	TEST_F(UnitCastTest, UnitCast_WhenCastingFromMetresToKiloMetres_WillYieldKilometres)
 	{
 		auto kilometres = units::unit_cast<units::kilometres>(1000_m);
-		EXPECT_NEAR(1, kilometres.count(), 0.0000001);
+		EXPECT_EQ(1_km, kilometres);
 	}
 
-	TEST_F(DistanceCastTest, DistanceCast_WhenCastingFromKilometresToMetres_WillYieldMetres)
+	TEST_F(UnitCastTest, UnitCast_WhenCastingFromKilometresToMetres_WillYieldMetres)
 	{
 		auto metres = units::unit_cast<units::metres>(1_km);
-		EXPECT_NEAR(1000, metres.count(), 0.0000001);
+		EXPECT_EQ(1000_m, metres);
 	}
 
-	TEST_F(DistanceCastTest, DistanceCast_WhenCastingFromHalfUnitToWhole_WillRoundDown)
+	TEST_F(UnitCastTest, UnitCast_WhenCastingFromHalfUnitToWhole_WillRoundDown)
 	{
 		auto kilometres = units::unit_cast<units::distance<int, std::kilo>>(999_m);
-		EXPECT_EQ(0, kilometres.count());
+		EXPECT_EQ(0_km, kilometres);
 	}
 
 	template <typename T>
@@ -387,7 +400,7 @@ namespace TestDistanceUnits
 
 	TYPED_TEST_CASE_P(BritishVsAmericanSpellingTest);
 
-	TYPED_TEST_P(BritishVsAmericanSpellingTest, MetresVsMetersYieldsSameType)
+	TYPED_TEST_P(BritishVsAmericanSpellingTest, EitherSpellingYieldsSameType)
 	{
 		constexpr bool is_same = std::is_same<typename std::tuple_element<0, TypeParam>::type,
 		                                      typename std::tuple_element<1, TypeParam>::type>::value;
@@ -402,7 +415,7 @@ namespace TestDistanceUnits
 	                                             std::tuple<units::metres, units::meters>,
 	                                             std::tuple<units::kilometres, units::kilometers>>;
 
-	REGISTER_TYPED_TEST_CASE_P(BritishVsAmericanSpellingTest, MetresVsMetersYieldsSameType);
+	REGISTER_TYPED_TEST_CASE_P(BritishVsAmericanSpellingTest, EitherSpellingYieldsSameType);
 
 	INSTANTIATE_TYPED_TEST_CASE_P(BritishVsAmericanSpelling, BritishVsAmericanSpellingTest, BritishVsAmericanSpellingTuple);
 
@@ -421,36 +434,39 @@ namespace TestDistanceUnits
 		EXPECT_TRUE(is_same) << "Incompatible types";
 	}
 
-	using MetricLiteralsTuple = Types<std::tuple<units::nanometres, decltype(1_nm)>,
-	                                  std::tuple<units::micrometres, decltype(1_um)>,
-	                                  std::tuple<units::millimetres, decltype(1_mm)>,
-	                                  std::tuple<units::centimetres, decltype(1_cm)>,
-	                                  std::tuple<units::metres, decltype(1_m)>,
-	                                  std::tuple<units::kilometres, decltype(1_km)>>;
+	using MetricDistanceLiteralsTuple = Types<std::tuple<units::nanometres, decltype(1_nm)>,
+	                                          std::tuple<units::micrometres, decltype(1_um)>,
+	                                          std::tuple<units::millimetres, decltype(1_mm)>,
+	                                          std::tuple<units::centimetres, decltype(1_cm)>,
+	                                          std::tuple<units::metres, decltype(1_m)>,
+	                                          std::tuple<units::kilometres, decltype(1_km)>>;
 
-	using ImperialLiteralsTuple = Types<std::tuple<units::inches, decltype(1_in)>,
-	                                    std::tuple<units::feet, decltype(1_ft)>,
-	                                    std::tuple<units::yards, decltype(1_yd)>,
-	                                    std::tuple<units::chains, decltype(1_ch)>,
-	                                    std::tuple<units::furlongs, decltype(1_fur)>,
-	                                    std::tuple<units::miles, decltype(1_mi)>,
-	                                    std::tuple<units::leagues, decltype(1_lea)>,
-	                                    std::tuple<units::thous, decltype(1_th)>>;
+	using ImperialDistanceLiteralsTuple = Types<std::tuple<units::inches, decltype(1_in)>,
+	                                            std::tuple<units::feet, decltype(1_ft)>,
+	                                            std::tuple<units::yards, decltype(1_yd)>,
+	                                            std::tuple<units::chains, decltype(1_ch)>,
+	                                            std::tuple<units::furlongs, decltype(1_fur)>,
+	                                            std::tuple<units::miles, decltype(1_mi)>,
+	                                            std::tuple<units::leagues, decltype(1_lea)>,
+	                                            std::tuple<units::thous, decltype(1_th)>>;
 
-	using MaritimeLiteralsTuple = Types<std::tuple<units::fathoms, decltype(1_ftm)>>;
+	using MaritimeDistanceLiteralsTuple = Types<std::tuple<units::fathoms, decltype(1_ftm)>,
+	                                            std::tuple<units::cables, decltype(1_cb)>,
+	                                            std::tuple<units::nautical_miles, decltype(1_NM)>,
+	                                            std::tuple<units::nautical_miles, decltype(1_nmi)>>;
 
-	using AstronomicalUnitsLiteralsTuple = Types<std::tuple<units::earth_radii, decltype(1_R)>,
-	                                             std::tuple<units::lunar_distances, decltype(1_LD)>,
-	                                             std::tuple<units::astronimical_units, decltype(1_AU)>,
-	                                             std::tuple<units::light_years, decltype(1_ly)>,
-	                                             std::tuple<units::parsecs, decltype(1_pc)>>;
+	using AstronomicalUnitsDistanceLiteralsTuple = Types<std::tuple<units::earth_radii, decltype(1_R)>,
+	                                                     std::tuple<units::lunar_distances, decltype(1_LD)>,
+	                                                     std::tuple<units::astronimical_units, decltype(1_AU)>,
+	                                                     std::tuple<units::light_years, decltype(1_ly)>,
+	                                                     std::tuple<units::parsecs, decltype(1_pc)>>;
 
 	REGISTER_TYPED_TEST_CASE_P(LiteralsTest, LiteralGeneratesCorrectType);
 
-	INSTANTIATE_TYPED_TEST_CASE_P(Metric, LiteralsTest, MetricLiteralsTuple);
-	INSTANTIATE_TYPED_TEST_CASE_P(Imperial, LiteralsTest, ImperialLiteralsTuple);
-	INSTANTIATE_TYPED_TEST_CASE_P(Maritime, LiteralsTest, MaritimeLiteralsTuple);
-	INSTANTIATE_TYPED_TEST_CASE_P(AstronomicalUnits, LiteralsTest, AstronomicalUnitsLiteralsTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(MetricDistance, LiteralsTest, MetricDistanceLiteralsTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(ImperialDistance, LiteralsTest, ImperialDistanceLiteralsTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(MaritimeDistance, LiteralsTest, MaritimeDistanceLiteralsTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(AstronomicalUnitsDistance, LiteralsTest, AstronomicalUnitsDistanceLiteralsTuple);
 
 	class UtilityTest : public Test
 	{

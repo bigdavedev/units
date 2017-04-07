@@ -27,6 +27,7 @@
 #include <ratio>
 #include <stdexcept>
 #include <type_traits>
+#include <numeric>
 
 #include <cmath>
 #include <cstdint>
@@ -72,13 +73,13 @@ namespace units
 
 		template <intmax_t Numerator>
 		struct greatest_common_divisor<Numerator, 0>
-		    : std::integral_constant<intmax_t, integer_sign<Numerator>::value>
+		    : std::integral_constant<intmax_t, integer_abs<Numerator>::value>
 		{
 		};
 
 		template <intmax_t Quotient>
 		struct greatest_common_divisor<0, Quotient>
-		    : std::integral_constant<intmax_t, integer_sign<Quotient>::value>
+		    : std::integral_constant<intmax_t, integer_abs<Quotient>::value>
 		{
 		};
 
@@ -230,14 +231,16 @@ namespace units
 	using kilometers  = kilometres;
 
 	// Imperial
-	using feet     = distance<double, std::ratio<3048, 10000>>;
+	using feet     = distance<double, std::ratio_multiply<std::ratio<381, 1250>, metres::ratio>>;
+	using thous    = distance<double, std::ratio_divide<feet::ratio, std::ratio<12000>>>;
+	using inches   = distance<double, std::ratio_divide<feet::ratio, std::ratio<12>>>;
+	using links    = distance<double, std::ratio_multiply<std::ratio<33, 50>, feet::ratio>>;
 	using yards    = distance<double, std::ratio_multiply<std::ratio<3>, feet::ratio>>;
-	using chains   = distance<double, std::ratio_multiply<std::ratio<66>, feet::ratio>>;
-	using furlongs = distance<double, std::ratio_multiply<std::ratio<660>, feet::ratio>>;
+	using rods     = distance<double, std::ratio_multiply<std::ratio<25>, links::ratio>>;
+	using chains   = distance<double, std::ratio_multiply<std::ratio<4>, rods::ratio>>;
+	using furlongs = distance<double, std::ratio_multiply<std::ratio<10>, chains::ratio>>;
 	using miles    = distance<double, std::ratio_multiply<std::ratio<5280>, feet::ratio>>;
 	using leagues  = distance<double, std::ratio_multiply<std::ratio<15840>, feet::ratio>>;
-	using inches   = distance<double, std::ratio_divide<feet::ratio, std::ratio<12>>>;
-	using thous    = distance<double, std::ratio_divide<feet::ratio, std::ratio<12000>>>;
 
 	// Maritime
 	using fathoms        = distance<double, std::ratio_multiply<std::ratio<608, 100>, feet::ratio>>;
@@ -317,17 +320,22 @@ inline namespace literals
 		constexpr units::kilometres operator"" _km(unsigned long long int dist);
 
 		// Imperial
+		constexpr units::thous operator"" _th(unsigned long long int dist);
 		constexpr units::inches operator"" _in(unsigned long long int dist);
+		constexpr units::links operator"" _li(unsigned long long int dist);
 		constexpr units::feet operator"" _ft(unsigned long long int dist);
 		constexpr units::yards operator"" _yd(unsigned long long int dist);
+		constexpr units::rods operator"" _rd(unsigned long long int dist);
 		constexpr units::chains operator"" _ch(unsigned long long int dist);
 		constexpr units::furlongs operator"" _fur(unsigned long long int dist);
 		constexpr units::miles operator"" _mi(unsigned long long int dist);
 		constexpr units::leagues operator"" _lea(unsigned long long int dist);
-		constexpr units::thous operator"" _th(unsigned long long int dist);
 
 		// Maritime
 		constexpr units::fathoms operator"" _ftm(unsigned long long int dist);
+		constexpr units::cables operator"" _cb(unsigned long long int dist);
+		constexpr units::nautical_miles operator"" _NM(unsigned long long int dist);
+		constexpr units::nautical_miles operator"" _nmi(unsigned long long int dist);
 
 		// Astronomical Units
 		constexpr units::earth_radii operator"" _R(unsigned long long int dist);
@@ -519,6 +527,30 @@ namespace units
 		return result_type{result_type{lhs}.count() % result_type{static_cast<typename result_type::rep>(scalar)}.count()};
 	}
 
+	namespace detail
+	{
+		template<typename T>
+		constexpr auto abs(const T& value)
+		{
+			return (T{} > value) ? -value : value;
+		}
+
+		constexpr bool is_negative(double a)
+		{
+			return a <= 0.0;
+		}
+
+		constexpr bool unit_compare(double lhs,
+									double rhs,
+									double max_diff = 0.000000001,
+									double max_relative_diff = std::numeric_limits<double>::epsilon())
+		{
+			return (abs(lhs - rhs) <= max_diff) ||
+				(is_negative(lhs) != is_negative(rhs)) ||
+				abs(lhs - rhs) <= (((abs(rhs) > abs(lhs)) ? abs(rhs) : abs(lhs)) * max_relative_diff);
+		}
+	}
+
 	// Relational operations
 	template <
 	    typename Rep1,
@@ -532,8 +564,10 @@ namespace units
 		using unit1       = unit<Rep1, Ratio1, UnitType1>;
 		using unit2       = unit<Rep2, Ratio2, UnitType2>;
 		using common_type = typename std::common_type<unit1, unit2>::type;
+		using common_rep  = typename common_type::rep;
 
-		return unit_cast<common_type>(lhs).count() == unit_cast<common_type>(rhs).count() || std::abs(unit_cast<common_type>(lhs).count() - unit_cast<common_type>(rhs).count()) < std::abs(std::min(unit_cast<common_type>(lhs).count(), unit_cast<common_type>(rhs).count())) * std::numeric_limits<double>::epsilon();
+		return detail::unit_compare(unit_cast<common_type>(lhs).count(),
+									unit_cast<common_type>(rhs).count());
 	}
 
 	template <
@@ -735,9 +769,19 @@ inline namespace literals
 		}
 
 		// Imperial
+		constexpr units::thous operator"" _th(unsigned long long int dist)
+		{
+			return units::thous{ static_cast<units::thous::rep>(dist) };
+		}
+
 		constexpr units::inches operator"" _in(unsigned long long int dist)
 		{
 			return units::inches{static_cast<units::inches::rep>(dist)};
+		}
+
+		constexpr units::links operator"" _li(unsigned long long int dist)
+		{
+			return units::links{ static_cast<units::links::rep>(dist) };
 		}
 
 		constexpr units::feet operator"" _ft(unsigned long long int dist)
@@ -748,6 +792,11 @@ inline namespace literals
 		constexpr units::yards operator"" _yd(unsigned long long int dist)
 		{
 			return units::yards{static_cast<units::yards::rep>(dist)};
+		}
+
+		constexpr units::rods operator"" _rd(unsigned long long int dist)
+		{
+			return units::rods{ static_cast<units::rods::rep>(dist) };
 		}
 
 		constexpr units::chains operator"" _ch(unsigned long long int dist)
@@ -770,15 +819,25 @@ inline namespace literals
 			return units::leagues{static_cast<units::leagues::rep>(dist)};
 		}
 
-		constexpr units::thous operator"" _th(unsigned long long int dist)
-		{
-			return units::thous{static_cast<units::thous::rep>(dist)};
-		}
-
 		// Maritime
 		constexpr units::fathoms operator"" _ftm(unsigned long long int dist)
 		{
 			return units::fathoms{static_cast<units::fathoms::rep>(dist)};
+		}
+
+		constexpr units::cables operator"" _cb(unsigned long long int dist)
+		{
+			return units::cables{static_cast<units::cables::rep>(dist)};
+		}
+
+		constexpr units::nautical_miles operator"" _NM(unsigned long long int dist)
+		{
+			return units::nautical_miles{static_cast<units::nautical_miles::rep>(dist)};
+		}
+
+		constexpr units::nautical_miles operator"" _nmi(unsigned long long int dist)
+		{
+			return units::nautical_miles{static_cast<units::nautical_miles::rep>(dist)};
 		}
 
 		// Astronomical Units
