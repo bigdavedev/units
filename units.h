@@ -32,6 +32,10 @@
 #include <cmath>
 #include <cstdint>
 
+#ifndef UNIT_DISABLE_IOSTREAM
+#include <iostream>
+#endif
+
 namespace units
 {
 	template <typename Rep, typename Ratio, typename UnitType>
@@ -284,6 +288,15 @@ namespace units
 
 	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
 	constexpr bool operator>=(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs);
+
+#ifndef UNITS_DISABLE_IOSTREAM
+	template <typename CharT, typename Traits, typename Rep, typename Ratio, typename UnitType>
+	std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
+	                                              unit<Rep, Ratio, UnitType> const&  u)
+	{
+		return os << u.count();
+	}
+#endif
 }
 
 inline namespace literals

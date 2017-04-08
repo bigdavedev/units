@@ -1,29 +1,29 @@
-project (distance_ut)
+project (test_units)
 
 if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	add_definitions ("-std=c++1z")
 endif()
 
-set (TARGET_NAME ${PROJECT_NAME})
-
-set (TEST_SOURCES
-	test_distance.cpp
-)
-
-add_executable (${TARGET_NAME} ${TEST_SOURCES})
-add_dependencies ( ${TARGET_NAME} gtest_main )
-
 include_directories (SYSTEM ${CMAKE_SOURCE_DIR}/external/googletest/googletest/include)
 include_directories (${CMAKE_SOURCE_DIR})
 
-target_link_libraries (${TARGET_NAME}
-	-pthread
-	gtest_main
-)
+macro (units_add_test TEST_NAME SOURCE_FILE)
+	set (TARGET_NAME ${TEST_NAME})
+	add_executable (${TARGET_NAME} ${SOURCE_FILE})
+	add_dependencies (${TARGET_NAME} gtest_main)
 
-add_test (${TARGET_NAME}
-	${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TARGET_NAME}
-)
+	target_link_libraries (${TARGET_NAME}
+		-pthread
+		gtest_main
+	)
+
+	add_test (${TARGET_NAME}
+		${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TARGET_NAME}
+	)
+endmacro ()
+
+units_add_test (test_distance test_distance.cpp)
+units_add_test (test_streams test_streams.cpp)
 
 if (UNITS_ENABLE_COVERAGE)
 	set (CMAKE_MODULE_PATH

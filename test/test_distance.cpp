@@ -6,8 +6,12 @@
 
 #include "units.h"
 
-using namespace testing;
 using namespace distance_literals;
+
+using testing::Test;
+using testing::Types;
+using testing::Values;
+using testing::WithParamInterface;
 
 namespace TestDistanceUnits
 {
@@ -104,7 +108,7 @@ namespace TestDistanceUnits
 	{
 		auto expected = TypeParam{conversion_tables::metric_to_imperial_lengths[std::type_index{typeid(TypeParam)}]};
 		auto actual   = TypeParam{1_m};
-		EXPECT_EQ(expected, actual) << expected.count() << " != " << actual.count();
+		EXPECT_EQ(expected, actual) << expected << " != " << actual;
 	}
 
 	using ImperialDistanceTypesTuple = Types<units::thous,
