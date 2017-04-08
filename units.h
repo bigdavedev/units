@@ -24,10 +24,10 @@
  * SOFTWARE.
  */
 
+#include <numeric>
 #include <ratio>
 #include <stdexcept>
 #include <type_traits>
-#include <numeric>
 
 #include <cmath>
 #include <cstdint>
@@ -43,22 +43,19 @@ namespace units
 	};
 
 	template <typename Rep, typename Ratio, typename UnitType>
-	struct is_distance<unit<Rep, Ratio, UnitType>>
-	    : std::true_type
+	struct is_distance<unit<Rep, Ratio, UnitType>> : std::true_type
 	{
 	};
 
 	namespace detail
 	{
 		template <intmax_t Numerator>
-		struct integer_sign
-		    : std::integral_constant<intmax_t, (Numerator < 0) ? -1 : 1>
+		struct integer_sign : std::integral_constant<intmax_t, (Numerator < 0) ? -1 : 1>
 		{
 		};
 
 		template <intmax_t Numerator>
-		struct integer_abs
-		    : std::integral_constant<intmax_t, Numerator * integer_sign<Numerator>::value>
+		struct integer_abs : std::integral_constant<intmax_t, Numerator * integer_sign<Numerator>::value>
 		{
 		};
 
@@ -66,26 +63,22 @@ namespace units
 		struct greatest_common_divisor;
 
 		template <intmax_t Numerator, intmax_t Quotient>
-		struct greatest_common_divisor
-		    : greatest_common_divisor<Quotient, (Numerator % Quotient)>
+		struct greatest_common_divisor : greatest_common_divisor<Quotient, (Numerator % Quotient)>
 		{
 		};
 
 		template <intmax_t Numerator>
-		struct greatest_common_divisor<Numerator, 0>
-		    : std::integral_constant<intmax_t, integer_abs<Numerator>::value>
+		struct greatest_common_divisor<Numerator, 0> : std::integral_constant<intmax_t, integer_abs<Numerator>::value>
 		{
 		};
 
 		template <intmax_t Quotient>
-		struct greatest_common_divisor<0, Quotient>
-		    : std::integral_constant<intmax_t, integer_abs<Quotient>::value>
+		struct greatest_common_divisor<0, Quotient> : std::integral_constant<intmax_t, integer_abs<Quotient>::value>
 		{
 		};
 
 		template <typename T>
-		auto fmod(T x, T y)
-		    -> typename std::enable_if<std::is_floating_point<T>::value, long long int>::type
+		auto fmod(T x, T y) -> typename std::enable_if<std::is_floating_point<T>::value, long long int>::type
 		{
 			return y != 0 ? x - std::trunc(x / y) * y : throw std::domain_error{"Dividing by zero!"};
 		};
@@ -100,32 +93,19 @@ namespace units
 			using type = units::unit<CommonRep, Ratio, UnitType>;
 		};
 
-		template <class CommonRep,
-		          class Ratio,
-		          class UnitType,
-		          class Rep2>
+		template <class CommonRep, class Ratio, class UnitType, class Rep2>
 		struct distance_div_mod_base<CommonRep, Ratio, UnitType, Rep2, false>
 		{ // no return type
 		};
 
-		template <class Rep1,
-		          class Ratio1,
-		          class UnitType1,
-		          class Rep2,
-		          bool = is_distance<Rep2>::value>
+		template <class Rep1, class Ratio1, class UnitType1, class Rep2, bool = is_distance<Rep2>::value>
 		struct distance_div_mod
 		{ // no return type
 		};
 
-		template <class Rep1,
-		          class Ratio1,
-		          class UnitType1,
-		          class Rep2>
+		template <class Rep1, class Ratio1, class UnitType1, class Rep2>
 		struct distance_div_mod<Rep1, Ratio1, UnitType1, Rep2, false>
-		    : distance_div_mod_base<typename std::common_type<Rep1, Rep2>::type,
-		                            Ratio1,
-		                            UnitType1,
-		                            Rep2>
+		    : distance_div_mod_base<typename std::common_type<Rep1, Rep2>::type, Ratio1, UnitType1, Rep2>
 		{ // return type for unit / rep and unit % rep
 		};
 	}
@@ -148,14 +128,10 @@ namespace std
 	};
 
 	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
-	struct common_type<units::unit<Rep1, Ratio1, UnitType1>,
-	                   units::unit<Rep2, Ratio2, UnitType2>>
+	struct common_type<units::unit<Rep1, Ratio1, UnitType1>, units::unit<Rep2, Ratio2, UnitType2>>
 	{
 		static_assert(std::is_same<UnitType1, UnitType2>::value, "Incompatible unit types");
-		using type = typename distance_common_type<std::common_type<Rep1, Rep2>,
-		                                           Ratio1,
-		                                           Ratio2,
-		                                           UnitType1>::type;
+		using type = typename distance_common_type<std::common_type<Rep1, Rep2>, Ratio1, Ratio2, UnitType1>::type;
 	};
 }
 
@@ -169,8 +145,8 @@ namespace units
 	}
 
 	template <typename ToDistance, typename Rep, typename Ratio, typename UnitType>
-	constexpr auto unit_cast(unit<Rep, Ratio, UnitType> from)
-	    -> typename std::enable_if<is_distance<ToDistance>::value, ToDistance>::type;
+	constexpr auto unit_cast(unit<Rep, Ratio, UnitType> from) ->
+	    typename std::enable_if<is_distance<ToDistance>::value, ToDistance>::type;
 
 	template <typename Rep, typename Ratio, typename UnitType>
 	struct unit
@@ -252,22 +228,23 @@ namespace units
 
 	// Astronimical Units
 	//
-	// Unfortunately, std::ratio uses std::intmax_t which does not have enough precision for defining a hubble ratio
+	// Unfortunately, std::ratio uses std::intmax_t which does not have enough precision for defining a hubble
+	// ratio
 	// which is 14.4 billion lightyears.
 	using earth_radii        = distance<long double, std::ratio_multiply<std::ratio<6371>, kilometres::ratio>>;
 	using lunar_distances    = distance<long double, std::ratio_multiply<std::ratio<384402>, kilometres::ratio>>;
 	using astronimical_units = distance<long double, std::ratio<149597870700>>;
-	using light_years        = distance<long double, std::ratio_multiply<std::ratio<94607304725808, 10>, kilometres::ratio>>;
-	using parsecs            = distance<long double, std::ratio_multiply<std::ratio<308567758146719, 10>, kilometres::ratio>>;
+	using light_years = distance<long double, std::ratio_multiply<std::ratio<94607304725808, 10>, kilometres::ratio>>;
+	using parsecs     = distance<long double, std::ratio_multiply<std::ratio<308567758146719, 10>, kilometres::ratio>>;
 
 	// Arithmetic operations
 	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
-	constexpr auto operator+(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
-	    -> typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type;
+	constexpr auto operator+(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs) ->
+	    typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type;
 
 	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
-	constexpr auto operator-(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
-	    -> typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type;
+	constexpr auto operator-(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs) ->
+	    typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type;
 
 	template <typename Rep1, typename Ratio, typename UnitType, typename Rep2>
 	constexpr auto operator*(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar)
@@ -282,12 +259,12 @@ namespace units
 	    -> unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>;
 
 	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
-	constexpr auto operator%(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
-	    -> typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type;
+	constexpr auto operator%(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs) ->
+	    typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type;
 
 	template <typename Rep1, typename Ratio, typename UnitType, typename Rep2>
-	constexpr auto operator%(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar)
-	    -> typename detail::distance_div_mod<Rep1, Ratio, UnitType, Rep2>::type;
+	constexpr auto operator%(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar) ->
+	    typename detail::distance_div_mod<Rep1, Ratio, UnitType, Rep2>::type;
 
 	// Relational operations
 	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
@@ -443,45 +420,29 @@ namespace units
 	}
 
 	// Arithmetic operations
-	template <typename Rep1,
-	          typename Ratio1,
-	          typename UnitType1,
-	          typename Rep2,
-	          typename Ratio2,
-	          typename UnitType2>
-	constexpr auto operator+(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
-	    -> typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
+	constexpr auto operator+(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs) ->
+	    typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type
 	{
 		using unit1       = unit<Rep1, Ratio1, UnitType1>;
 		using unit2       = unit<Rep2, Ratio2, UnitType2>;
 		using common_type = typename std::common_type<unit1, unit2>::type;
 
-		return static_cast<common_type>(static_cast<common_type>(lhs).count()
-		                                + static_cast<common_type>(rhs).count());
+		return static_cast<common_type>(static_cast<common_type>(lhs).count() + static_cast<common_type>(rhs).count());
 	}
 
-	template <typename Rep1,
-	          typename Ratio1,
-	          typename UnitType1,
-	          typename Rep2,
-	          typename Ratio2,
-	          typename UnitType2>
-	constexpr auto operator-(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
-	    -> typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
+	constexpr auto operator-(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs) ->
+	    typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type
 	{
 		using unit1       = unit<Rep1, Ratio1, UnitType1>;
 		using unit2       = unit<Rep2, Ratio2, UnitType2>;
 		using common_type = typename std::common_type<unit1, unit2>::type;
 
-		return static_cast<common_type>(static_cast<common_type>(lhs).count()
-		                                - static_cast<common_type>(rhs).count());
+		return static_cast<common_type>(static_cast<common_type>(lhs).count() - static_cast<common_type>(rhs).count());
 	}
 
-	template <
-	    typename Rep1,
-	    typename Ratio,
-	    typename UnitType,
-	    typename Rep2>
+	template <typename Rep1, typename Ratio, typename UnitType, typename Rep2>
 	constexpr auto operator*(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar)
 	    -> unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>
 	{
@@ -489,11 +450,7 @@ namespace units
 		return static_cast<result_type>(static_cast<result_type>(lhs).count() * scalar);
 	}
 
-	template <
-	    typename Rep1,
-	    typename Rep2,
-	    typename Ratio,
-	    typename UnitType>
+	template <typename Rep1, typename Rep2, typename Ratio, typename UnitType>
 	constexpr auto operator*(Rep1 const scalar, unit<Rep2, Ratio, UnitType> rhs)
 	    -> unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>
 	{
@@ -501,11 +458,7 @@ namespace units
 		return rhs * scalar;
 	}
 
-	template <
-	    typename Rep1,
-	    typename Ratio,
-	    typename UnitType,
-	    typename Rep2>
+	template <typename Rep1, typename Ratio, typename UnitType, typename Rep2>
 	constexpr auto operator/(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar)
 	    -> unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>
 	{
@@ -513,15 +466,9 @@ namespace units
 		return static_cast<result_type>(static_cast<result_type>(lhs).count() / scalar);
 	}
 
-	template <
-	    typename Rep1,
-	    typename Ratio1,
-	    typename UnitType1,
-	    typename Rep2,
-	    typename Ratio2,
-	    typename UnitType2>
-	constexpr auto operator%(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
-	    -> typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
+	constexpr auto operator%(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs) ->
+	    typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type
 	{
 		using unit1       = unit<Rep1, Ratio1, UnitType1>;
 		using unit2       = unit<Rep2, Ratio2, UnitType2>;
@@ -530,50 +477,37 @@ namespace units
 		return common_type{common_type{lhs}.count() % common_type{rhs}.count()};
 	}
 
-	template <
-	    typename Rep1,
-	    typename Ratio,
-	    typename UnitType,
-	    typename Rep2>
-	constexpr auto operator%(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar)
-	    -> typename detail::distance_div_mod<Rep1, Ratio, UnitType, Rep2>::type
+	template <typename Rep1, typename Ratio, typename UnitType, typename Rep2>
+	constexpr auto operator%(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar) ->
+	    typename detail::distance_div_mod<Rep1, Ratio, UnitType, Rep2>::type
 	{
 		using result_type = unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>;
-		return result_type{result_type{lhs}.count() % result_type{static_cast<typename result_type::rep>(scalar)}.count()};
+		return result_type{result_type{lhs}.count()
+		                   % result_type{static_cast<typename result_type::rep>(scalar)}.count()};
 	}
 
 	namespace detail
 	{
-		template<typename T>
+		template <typename T>
 		constexpr auto abs(const T& value)
 		{
 			return (T{} > value) ? -value : value;
 		}
 
-		constexpr bool is_negative(double a)
-		{
-			return a <= 0.0;
-		}
+		constexpr bool is_negative(double a) { return a <= 0.0; }
 
 		constexpr bool unit_compare(double lhs,
-									double rhs,
-									double max_diff = 0.000000001,
-									double max_relative_diff = std::numeric_limits<double>::epsilon())
+		                            double rhs,
+		                            double max_diff          = 0.000000001,
+		                            double max_relative_diff = std::numeric_limits<double>::epsilon())
 		{
-			return (abs(lhs - rhs) <= max_diff) ||
-				(is_negative(lhs) != is_negative(rhs)) ||
-				abs(lhs - rhs) <= (((abs(rhs) > abs(lhs)) ? abs(rhs) : abs(lhs)) * max_relative_diff);
+			return (abs(lhs - rhs) <= max_diff) || (is_negative(lhs) != is_negative(rhs))
+			       || abs(lhs - rhs) <= (((abs(rhs) > abs(lhs)) ? abs(rhs) : abs(lhs)) * max_relative_diff);
 		}
 	}
 
 	// Relational operations
-	template <
-	    typename Rep1,
-	    typename Ratio1,
-	    typename UnitType1,
-	    typename Rep2,
-	    typename Ratio2,
-	    typename UnitType2>
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
 	constexpr bool operator==(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
 	{
 		using unit1       = unit<Rep1, Ratio1, UnitType1>;
@@ -581,17 +515,10 @@ namespace units
 		using common_type = typename std::common_type<unit1, unit2>::type;
 		using common_rep  = typename common_type::rep;
 
-		return detail::unit_compare(unit_cast<common_type>(lhs).count(),
-									unit_cast<common_type>(rhs).count());
+		return detail::unit_compare(unit_cast<common_type>(lhs).count(), unit_cast<common_type>(rhs).count());
 	}
 
-	template <
-	    typename Rep1,
-	    typename Ratio1,
-	    typename UnitType1,
-	    typename Rep2,
-	    typename Ratio2,
-	    typename UnitType2>
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
 	constexpr bool operator!=(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
 	{
 		using unit1       = unit<Rep1, Ratio1, UnitType1>;
@@ -601,65 +528,41 @@ namespace units
 		return !(lhs == rhs);
 	}
 
-	template <
-	    typename Rep1,
-	    typename Ratio1,
-	    typename UnitType1,
-	    typename Rep2,
-	    typename Ratio2,
-	    typename UnitType2>
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
 	constexpr bool operator<(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
 	{
-		using unit1 = unit<Rep1, Ratio1, UnitType1>;
-		using unit2 = unit<Rep2, Ratio2, UnitType2>;
+		using unit1       = unit<Rep1, Ratio1, UnitType1>;
+		using unit2       = unit<Rep2, Ratio2, UnitType2>;
 		using common_type = typename std::common_type<unit1, unit2>::type;
 
 		return std::isless(unit_cast<common_type>(lhs).count(), unit_cast<common_type>(rhs).count());
 	}
 
-	template <
-	    typename Rep1,
-	    typename Ratio1,
-	    typename UnitType1,
-	    typename Rep2,
-	    typename Ratio2,
-	    typename UnitType2>
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
 	constexpr bool operator<=(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
 	{
-		using unit1 = unit<Rep1, Ratio1, UnitType1>;
-		using unit2 = unit<Rep2, Ratio2, UnitType2>;
+		using unit1       = unit<Rep1, Ratio1, UnitType1>;
+		using unit2       = unit<Rep2, Ratio2, UnitType2>;
 		using common_type = typename std::common_type<unit1, unit2>::type;
 
 		return std::islessequal(unit_cast<common_type>(lhs).count(), unit_cast<common_type>(rhs).count());
 	}
 
-	template <
-	    typename Rep1,
-	    typename Ratio1,
-	    typename UnitType1,
-	    typename Rep2,
-	    typename Ratio2,
-	    typename UnitType2>
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
 	constexpr bool operator>(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
 	{
-		using unit1 = unit<Rep1, Ratio1, UnitType1>;
-		using unit2 = unit<Rep2, Ratio2, UnitType2>;
+		using unit1       = unit<Rep1, Ratio1, UnitType1>;
+		using unit2       = unit<Rep2, Ratio2, UnitType2>;
 		using common_type = typename std::common_type<unit1, unit2>::type;
 
 		return std::isgreater(unit_cast<common_type>(lhs).count(), unit_cast<common_type>(rhs).count());
 	}
 
-	template <
-	    typename Rep1,
-	    typename Ratio1,
-	    typename UnitType1,
-	    typename Rep2,
-	    typename Ratio2,
-	    typename UnitType2>
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
 	constexpr bool operator>=(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
 	{
-		using unit1 = unit<Rep1, Ratio1, UnitType1>;
-		using unit2 = unit<Rep2, Ratio2, UnitType2>;
+		using unit1       = unit<Rep1, Ratio1, UnitType1>;
+		using unit2       = unit<Rep2, Ratio2, UnitType2>;
 		using common_type = typename std::common_type<unit1, unit2>::type;
 
 		return std::isgreaterequal(unit_cast<common_type>(lhs).count(), unit_cast<common_type>(rhs).count());
@@ -667,22 +570,20 @@ namespace units
 
 	namespace detail
 	{
-		template <
-		    typename ToDistance,
-		    typename Ratio,
-		    typename CommonType,
-		    bool RatioNumIsOne = false,
-		    bool RatioDenIsOne = false>
+		template <typename ToDistance,
+		          typename Ratio,
+		          typename CommonType,
+		          bool RatioNumIsOne = false,
+		          bool RatioDenIsOne = false>
 		struct unit_cast
 		{
 			template <typename Rep, typename Length, typename UnitType>
 			static constexpr ToDistance cast(unit<Rep, Length, UnitType> from)
 			{
 				using ToRep = typename ToDistance::rep;
-				return ToDistance{
-				    static_cast<ToRep>(static_cast<CommonType>(from.count())
-				                       / static_cast<CommonType>(Ratio::num)
-				                       * static_cast<CommonType>(Ratio::den))};
+				return ToDistance{static_cast<ToRep>(static_cast<CommonType>(from.count())
+				                                     / static_cast<CommonType>(Ratio::num)
+				                                     * static_cast<CommonType>(Ratio::den))};
 			}
 		};
 
@@ -705,8 +606,7 @@ namespace units
 			{
 				using ToRep = typename ToDistance::rep;
 				return ToDistance{
-				    static_cast<ToRep>(static_cast<CommonType>(from.count())
-				                       * static_cast<CommonType>(Ratio::den))};
+				    static_cast<ToRep>(static_cast<CommonType>(from.count()) * static_cast<CommonType>(Ratio::den))};
 			}
 		};
 
@@ -718,15 +618,14 @@ namespace units
 			{
 				using ToRep = typename ToDistance::rep;
 				return ToDistance{
-				    static_cast<ToRep>(static_cast<CommonType>(from.count())
-				                       / static_cast<CommonType>(Ratio::num))};
+				    static_cast<ToRep>(static_cast<CommonType>(from.count()) / static_cast<CommonType>(Ratio::num))};
 			}
 		};
 	}
 
 	template <typename ToUnit, typename Rep, typename Ratio, typename UnitType>
-	constexpr auto unit_cast(unit<Rep, Ratio, UnitType> from)
-	    -> typename std::enable_if<is_distance<ToUnit>::value, ToUnit>::type
+	constexpr auto unit_cast(unit<Rep, Ratio, UnitType> from) ->
+	    typename std::enable_if<is_distance<ToUnit>::value, ToUnit>::type
 	{
 		static_assert(std::is_same<typename ToUnit::unit_type, UnitType>::value, "Incompatible types");
 
@@ -735,11 +634,8 @@ namespace units
 		using CommonType  = typename std::common_type<ToRep, Rep, intmax_t>::type;
 		using CommonRatio = std::ratio_divide<ToRatio, Ratio>;
 
-		return detail::unit_cast<ToUnit,
-		                         CommonRatio,
-		                         CommonType,
-		                         CommonRatio::num == 1,
-		                         CommonRatio::den == 1>::cast(from);
+		return detail::unit_cast<ToUnit, CommonRatio, CommonType, CommonRatio::num == 1, CommonRatio::den == 1>::cast(
+		    from);
 	}
 }
 
@@ -786,7 +682,7 @@ inline namespace literals
 		// Imperial
 		constexpr units::thous operator"" _th(unsigned long long int dist)
 		{
-			return units::thous{ static_cast<units::thous::rep>(dist) };
+			return units::thous{static_cast<units::thous::rep>(dist)};
 		}
 
 		constexpr units::inches operator"" _in(unsigned long long int dist)
@@ -796,7 +692,7 @@ inline namespace literals
 
 		constexpr units::links operator"" _li(unsigned long long int dist)
 		{
-			return units::links{ static_cast<units::links::rep>(dist) };
+			return units::links{static_cast<units::links::rep>(dist)};
 		}
 
 		constexpr units::feet operator"" _ft(unsigned long long int dist)
@@ -811,7 +707,7 @@ inline namespace literals
 
 		constexpr units::rods operator"" _rd(unsigned long long int dist)
 		{
-			return units::rods{ static_cast<units::rods::rep>(dist) };
+			return units::rods{static_cast<units::rods::rep>(dist)};
 		}
 
 		constexpr units::chains operator"" _ch(unsigned long long int dist)
