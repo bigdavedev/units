@@ -292,10 +292,7 @@ namespace units
 #ifndef UNITS_DISABLE_IOSTREAM
 	template <typename CharT, typename Traits, typename Rep, typename Ratio, typename UnitType>
 	std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
-	                                              unit<Rep, Ratio, UnitType> const&  u)
-	{
-		return os << u.count();
-	}
+	                                              unit<Rep, Ratio, UnitType> const&  u);
 #endif
 }
 
@@ -790,4 +787,16 @@ inline namespace literals
 			return units::parsecs{static_cast<units::parsecs::rep>(dist)};
 		}
 	}
+}
+
+namespace units
+{
+#ifndef UNITS_DISABLE_IOSTREAM
+	template <typename CharT, typename Traits, typename Rep, typename Ratio, typename UnitType>
+	std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
+	                                              unit<Rep, Ratio, UnitType> const&  u)
+	{
+		return os << u.count();
+	}
+#endif
 }
