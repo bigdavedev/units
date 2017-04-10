@@ -31,8 +31,8 @@ namespace TestDistanceUnits
 
 		     // Maritime
 		     {std::type_index{typeid(units::fathoms)}, 0.539611825},
-		     {std::type_index{typeid(units::cables)}, 0},
-		     {std::type_index{typeid(units::nautical_miles)}, 0}};
+		     {std::type_index{typeid(units::cables)}, 0.005396118 },
+		     {std::type_index{typeid(units::nautical_miles)}, 0.000539612 }};
 
 		std::unordered_map<std::type_index, units::metres> imperial_to_metric =
 		    {{std::type_index{typeid(units::thous)}, units::metres{0.0000254}},

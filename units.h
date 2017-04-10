@@ -504,15 +504,12 @@ namespace units
 			return (T{} > value) ? -value : value;
 		}
 
-		constexpr bool is_negative(double a) { return a <= 0.0; }
-
 		constexpr bool unit_compare(double lhs,
 		                            double rhs,
 		                            double max_diff          = 0.000000001,
 		                            double max_relative_diff = std::numeric_limits<double>::epsilon())
 		{
-			return (abs(lhs - rhs) <= max_diff) || (is_negative(lhs) != is_negative(rhs))
-			       || abs(lhs - rhs) <= (((abs(rhs) > abs(lhs)) ? abs(rhs) : abs(lhs)) * max_relative_diff);
+			return (abs(lhs - rhs) <= (((abs(rhs) > abs(lhs)) ? abs(rhs) : abs(lhs)) * max_relative_diff)) || (abs(lhs - rhs) <= max_diff);
 		}
 	}
 
