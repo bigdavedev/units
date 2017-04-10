@@ -15,108 +15,96 @@ using testing::WithParamInterface;
 
 namespace TestDistanceUnits
 {
-	namespace conversion_tables
-	{
-		std::unordered_map<std::type_index, double> metric_to_imperial_lengths =
-		    {{std::type_index{typeid(units::thous)}, 39370.078740158},
-		     {std::type_index{typeid(units::inches)}, 39.37007874},
-		     {std::type_index{typeid(units::links)}, 4.970969538},
-		     {std::type_index{typeid(units::feet)}, 3.280839895},
-		     {std::type_index{typeid(units::yards)}, 1.093613298},
-		     {std::type_index{typeid(units::rods)}, 0.198838782},
-		     {std::type_index{typeid(units::chains)}, 0.049709695},
-		     {std::type_index{typeid(units::furlongs)}, 0.004970969},
-		     {std::type_index{typeid(units::miles)}, 0.000621372},
-		     {std::type_index{typeid(units::leagues)}, 0.000207124},
-
-		     // Maritime
-		     {std::type_index{typeid(units::fathoms)}, 0.539611825},
-		     {std::type_index{typeid(units::cables)}, 0.005396118 },
-		     {std::type_index{typeid(units::nautical_miles)}, 0.000539612 }};
-
-		std::unordered_map<std::type_index, units::metres> imperial_to_metric =
-		    {{std::type_index{typeid(units::thous)}, units::metres{0.0000254}},
-		     {std::type_index{typeid(units::inches)}, units::metres{0.0254}},
-		     {std::type_index{typeid(units::feet)}, units::metres{0.3048}},
-		     {std::type_index{typeid(units::yards)}, units::metres{0.9144}},
-		     {std::type_index{typeid(units::chains)}, units::metres{20.1168}},
-		     {std::type_index{typeid(units::furlongs)}, units::metres{201.168}},
-		     {std::type_index{typeid(units::miles)}, units::metres{1609.344}},
-		     {std::type_index{typeid(units::leagues)}, units::metres{4828.032}}};
-	}
-
-	class DistanceConstructionTest : public Test
+	template<typename T>
+	class UnitCastTest : public Test
 	{
 	};
 
-	class NonMetricToMetricConstruction : public DistanceConstructionTest,
-	                                      public WithParamInterface<std::tuple<units::metres, units::metres>>
-	{
-	};
+	TYPED_TEST_CASE_P(UnitCastTest);
 
-	TEST_P(NonMetricToMetricConstruction, Contructor_WhenGivenConvertibleType_WillYieldCorrectConversion)
+#define UNITS_TYPE_COMBINE(T) std::tuple<T, units::nanometres>, \
+std::tuple<T, units::micrometres>, \
+std::tuple<T, units::millimetres>, \
+std::tuple<T, units::centimetres>, \
+std::tuple<T, units::decimetres>, \
+std::tuple<T, units::metres>, \
+std::tuple<T, units::kilometres>, \
+std::tuple<T, units::thous>, \
+std::tuple<T, units::inches>, \
+std::tuple<T, units::links>, \
+std::tuple<T, units::feet>, \
+std::tuple<T, units::yards>, \
+std::tuple<T, units::rods>, \
+std::tuple<T, units::chains>, \
+std::tuple<T, units::furlongs>, \
+std::tuple<T, units::miles>, \
+std::tuple<T, units::leagues>, \
+std::tuple<T, units::fathoms>, \
+std::tuple<T, units::cables>, \
+std::tuple<T, units::nautical_miles>
+
+	TYPED_TEST_P(UnitCastTest, UnitCast_WhenConvertedToCompatibleType_WillConvertBackWithoutPrecisionLoss)
 	{
-		EXPECT_NEAR(std::get<1>(GetParam()).count(), std::get<0>(GetParam()).count(), 0.0000001);
+		using test_type = typename std::tuple_element_t<0, TypeParam>;
+		using convertible_type = typename std::tuple_element_t<1, TypeParam>;
+
+		convertible_type conversion = units::unit_cast<convertible_type>(test_type{ 1 });
+		test_type result = units::unit_cast<test_type>(conversion);
+
+		EXPECT_EQ(test_type{ 1 }, result);
 	}
 
-	INSTANTIATE_TEST_CASE_P(ImperialToMetric,
-	                        NonMetricToMetricConstruction,
-	                        Values(std::make_tuple(1_th, units::metres{0.0000254}),
-	                               std::make_tuple(1_in, units::metres{0.0254}),
-	                               std::make_tuple(1_ft, units::metres{0.3048}),
-	                               std::make_tuple(1_yd, units::metres{0.9144}),
-	                               std::make_tuple(1_ch, units::metres{20.1168}),
-	                               std::make_tuple(1_fur, units::metres{201.168}),
-	                               std::make_tuple(1_mi, units::metres{1609.344}),
-	                               std::make_tuple(1_lea, units::metres{4828.032})));
+	// Metric
+	using NanometresTuple = Types<UNITS_TYPE_COMBINE(units::nanometres)>;
+	using MicrometresTuple = Types<UNITS_TYPE_COMBINE(units::micrometres)>;
+	using MillimetresTuple = Types<UNITS_TYPE_COMBINE(units::millimetres)>;
+	using CentimetresTuple = Types<UNITS_TYPE_COMBINE(units::centimetres)>;
+	using DecimetresTuple = Types<UNITS_TYPE_COMBINE(units::decimetres)>;
+	using MetresTuple = Types<UNITS_TYPE_COMBINE(units::metres)>;
+	using KilometresTuple = Types<UNITS_TYPE_COMBINE(units::kilometres)>;
 
-	INSTANTIATE_TEST_CASE_P(MaritimeToMetric,
-	                        NonMetricToMetricConstruction,
-	                        Values(std::make_tuple(1_ftm, units::metres{1.853184}),
-	                               std::make_tuple(1_cb, units::metres{185.3184}),
-	                               std::make_tuple(1_NM, units::metres{1853.184}),
-	                               std::make_tuple(1_nmi, units::metres{1853.184})));
+	// Imperial
+	using ThousTuple = Types<UNITS_TYPE_COMBINE(units::thous)>;
+	using InchesTuple = Types<UNITS_TYPE_COMBINE(units::inches)>;
+	using LinksTuple = Types<UNITS_TYPE_COMBINE(units::links)>;
+	using FeetTuple = Types<UNITS_TYPE_COMBINE(units::feet)>;
+	using YardsTuple = Types<UNITS_TYPE_COMBINE(units::yards)>;
+	using RodsTuple = Types<UNITS_TYPE_COMBINE(units::rods)>;
+	using ChainsTuple = Types<UNITS_TYPE_COMBINE(units::chains)>;
+	using FurlongsTuple = Types<UNITS_TYPE_COMBINE(units::furlongs)>;
+	using MilesTuple = Types<UNITS_TYPE_COMBINE(units::miles)>;
+	using LeaguesTuple = Types<UNITS_TYPE_COMBINE(units::leagues)>;
 
-	INSTANTIATE_TEST_CASE_P(AstronomicalToMetric,
-	                        NonMetricToMetricConstruction,
-	                        Values(std::make_tuple(1_R, 6371000_m),
-	                               std::make_tuple(1_LD, 384402000_m),
-	                               std::make_tuple(1_AU, 149597870700_m),
-	                               std::make_tuple(1_ly, 9460730472580800_m),
-	                               std::make_tuple(1_pc, 30856775814671900_m)));
+	// Maritime
+	using FathomsTuple = Types<UNITS_TYPE_COMBINE(units::fathoms)>;
+	using CablesTuple = Types<UNITS_TYPE_COMBINE(units::cables)>;
+	using NauticalMilesTuple = Types<UNITS_TYPE_COMBINE(units::nautical_miles)>;
 
-	template <typename T>
-	class MetricToNonMetricConstruction : public DistanceConstructionTest
-	{
-	};
+#undef UNITS_TYPE_COMBINE
 
-	TYPED_TEST_CASE_P(MetricToNonMetricConstruction);
+	REGISTER_TYPED_TEST_CASE_P(UnitCastTest,
+							   UnitCast_WhenConvertedToCompatibleType_WillConvertBackWithoutPrecisionLoss);
 
-	TYPED_TEST_P(MetricToNonMetricConstruction, Contructor_WhenGivenConvertibleType_WillYieldCorrectConversion)
-	{
-		auto expected = TypeParam{conversion_tables::metric_to_imperial_lengths[std::type_index{typeid(TypeParam)}]};
-		auto actual   = TypeParam{1_m};
-		EXPECT_EQ(expected, actual) << expected << " != " << actual;
-	}
-
-	using ImperialDistanceTypesTuple = Types<units::thous,
-	                                         units::inches,
-	                                         units::links,
-	                                         units::feet,
-	                                         units::yards,
-	                                         units::rods,
-	                                         units::chains,
-	                                         units::furlongs,
-	                                         units::miles,
-	                                         units::leagues>;
-
-	using MaritimeDistanceTypesTuple = Types<units::fathoms, units::cables, units::nautical_miles>;
-
-	REGISTER_TYPED_TEST_CASE_P(MetricToNonMetricConstruction,
-	                           Contructor_WhenGivenConvertibleType_WillYieldCorrectConversion);
-
-	INSTANTIATE_TYPED_TEST_CASE_P(Imperial, MetricToNonMetricConstruction, ImperialDistanceTypesTuple);
-	INSTANTIATE_TYPED_TEST_CASE_P(Maritime, MetricToNonMetricConstruction, MaritimeDistanceTypesTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Nanometres, UnitCastTest, NanometresTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Micrometres, UnitCastTest, MicrometresTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Millimetres, UnitCastTest, MillimetresTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Centimetres, UnitCastTest, CentimetresTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(DeciMetres, UnitCastTest, DecimetresTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Metres, UnitCastTest, MetresTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Kilometres, UnitCastTest, KilometresTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Thous, UnitCastTest, ThousTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Inches, UnitCastTest, InchesTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Links, UnitCastTest, LinksTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Feet, UnitCastTest, FeetTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Yards, UnitCastTest, YardsTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Rods, UnitCastTest, RodsTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Chains, UnitCastTest, ChainsTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Furlongs, UnitCastTest, FurlongsTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Miles, UnitCastTest, MilesTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Leagues, UnitCastTest, LeaguesTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Fathoms, UnitCastTest, FathomsTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(Cables, UnitCastTest, CablesTuple);
+	INSTANTIATE_TYPED_TEST_CASE_P(NauticalMiles, UnitCastTest, NauticalMilesTuple);
 
 	template <typename T>
 	class BritishVsAmericanSpellingTest : public Test
