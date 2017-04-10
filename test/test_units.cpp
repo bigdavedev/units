@@ -3,6 +3,8 @@
 #include "units.h"
 
 using testing::Test;
+using testing::WithParamInterface;
+using testing::Values;
 
 namespace TestUnits
 {
@@ -337,4 +339,103 @@ namespace TestUnits
 		auto result = units::unit_cast<kilo_unit_int>(base_unit_int{999});
 		EXPECT_EQ(kilo_unit_int{0}, result);
 	}
+
+	class UtilityTest : public Test
+	{};
+
+	TEST_F(UtilityTest, FMod_WhenGivenZeroForY_WillThrowDomainError)
+	{
+		EXPECT_THROW(units::detail::fmod(1.0, 0.0), std::domain_error);
+	}
+
+	TEST_F(UtilityTest, Abs_WhenValueIsPositive_WillReturnPositiveValue)
+	{
+		EXPECT_EQ(1, units::detail::abs(1));
+	}
+
+	TEST_F(UtilityTest, Abs_WhenValueIsNegative_WillReturnPositiveValue)
+	{
+		EXPECT_EQ(1, units::detail::abs(-1));
+	}
+
+	TEST_F(UtilityTest, Abs_WhenValueIsNegativeZero_WillReturnPositiveValue)
+	{
+		EXPECT_EQ(double{ 0 }, units::detail::abs(double{ -0 }));
+	}
+
+	using UnitCompareTuple = std::tuple<double, double, double, double>;
+
+	class UnitCompareEqualTest : public UtilityTest, public WithParamInterface<UnitCompareTuple>
+	{
+	};
+
+	TEST_P(UnitCompareEqualTest, UnitCompare_WhenValuesAreEquivalent_WillReturnTrue)
+	{
+		auto const lhs               = std::get<0>(GetParam());
+		auto const rhs               = std::get<1>(GetParam());
+		auto const max_diff          = std::get<2>(GetParam());
+		auto const max_relative_diff = std::get<3>(GetParam());
+
+		EXPECT_TRUE(units::detail::unit_compare(lhs, rhs, max_diff, max_relative_diff));
+	}
+
+	INSTANTIATE_TEST_CASE_P(,
+	                        UnitCompareEqualTest,
+	                        Values(std::make_tuple(1, 1, 0.000001, std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(1.0000001, 1.0000001, 0.1, std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(1.0,
+	                                               1.0 + std::numeric_limits<double>::epsilon(),
+	                                               0.1,
+	                                               std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(1.0,
+	                                               1.0 + std::numeric_limits<double>::epsilon(),
+	                                               std::numeric_limits<double>::epsilon(),
+	                                               std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(1.0,
+	                                               1.0 + (std::numeric_limits<double>::epsilon() * 2),
+	                                               std::numeric_limits<double>::epsilon() * 2,
+	                                               std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(-1, -1, 0.000001, std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(-1.0000001, -1.0000001, 0.1, std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(-1.0,
+	                                               -1.0 + std::numeric_limits<double>::epsilon(),
+	                                               0.1,
+	                                               std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(-1.0,
+	                                               -1.0 + std::numeric_limits<double>::epsilon(),
+	                                               std::numeric_limits<double>::epsilon(),
+	                                               std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(-1.0,
+	                                               -1.0 + (std::numeric_limits<double>::epsilon() * 2),
+	                                               std::numeric_limits<double>::epsilon() * 2,
+	                                               std::numeric_limits<double>::epsilon())));
+
+	class UnitCompareNotEqualTest : public UtilityTest, public WithParamInterface<UnitCompareTuple>
+	{
+	};
+
+	TEST_P(UnitCompareNotEqualTest, UnitCompare_WhenValuesAreNotEquivalent_WillReturnFalse)
+	{
+		auto const lhs               = std::get<0>(GetParam());
+		auto const rhs               = std::get<1>(GetParam());
+		auto const max_diff          = std::get<2>(GetParam());
+		auto const max_relative_diff = std::get<3>(GetParam());
+
+		EXPECT_FALSE(units::detail::unit_compare(lhs, rhs, max_diff, max_relative_diff));
+	}
+
+	INSTANTIATE_TEST_CASE_P(,
+	                        UnitCompareNotEqualTest,
+	                        Values(std::make_tuple(1, 0, 0.000001, std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(1.0001, 1.0002, 0.00001, std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(1.0,
+	                                               1.0 + (std::numeric_limits<double>::epsilon() * 2),
+	                                               std::numeric_limits<double>::epsilon(),
+	                                               std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(-1, 0, 0.000001, std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(-1.0001, -1.0002, 0.00001, std::numeric_limits<double>::epsilon()),
+	                               std::make_tuple(-1.0,
+	                                               -1.0 + (std::numeric_limits<double>::epsilon() * 2),
+	                                               std::numeric_limits<double>::epsilon(),
+	                                               std::numeric_limits<double>::epsilon())));
 }

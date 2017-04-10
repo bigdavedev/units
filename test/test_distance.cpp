@@ -182,13 +182,4 @@ std::tuple<T, units::nautical_miles>
 	INSTANTIATE_TYPED_TEST_CASE_P(ImperialDistance, LiteralsTest, ImperialDistanceLiteralsTuple);
 	INSTANTIATE_TYPED_TEST_CASE_P(MaritimeDistance, LiteralsTest, MaritimeDistanceLiteralsTuple);
 	INSTANTIATE_TYPED_TEST_CASE_P(AstronomicalUnitsDistance, LiteralsTest, AstronomicalUnitsDistanceLiteralsTuple);
-
-	class UtilityTest : public Test
-	{
-	};
-
-	TEST_F(UtilityTest, FMod_WhenGivenZeroForY_WillThrowDomainError)
-	{
-		EXPECT_THROW(units::detail::fmod(1.0, 0.0), std::domain_error);
-	}
 }
