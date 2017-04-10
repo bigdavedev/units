@@ -22,7 +22,8 @@ namespace TestDistanceUnits
 
 	TYPED_TEST_CASE_P(UnitCastTest);
 
-#define UNITS_TYPE_COMBINE(T) std::tuple<T, units::nanometres>, \
+#define UNITS_TYPE_COMBINE(T) \
+std::tuple<T, units::nanometres>, \
 std::tuple<T, units::micrometres>, \
 std::tuple<T, units::millimetres>, \
 std::tuple<T, units::centimetres>, \
@@ -55,29 +56,29 @@ std::tuple<T, units::nautical_miles>
 	}
 
 	// Metric
-	using NanometresTuple = Types<UNITS_TYPE_COMBINE(units::nanometres)>;
+	using NanometresTuple  = Types<UNITS_TYPE_COMBINE(units::nanometres)>;
 	using MicrometresTuple = Types<UNITS_TYPE_COMBINE(units::micrometres)>;
 	using MillimetresTuple = Types<UNITS_TYPE_COMBINE(units::millimetres)>;
 	using CentimetresTuple = Types<UNITS_TYPE_COMBINE(units::centimetres)>;
-	using DecimetresTuple = Types<UNITS_TYPE_COMBINE(units::decimetres)>;
-	using MetresTuple = Types<UNITS_TYPE_COMBINE(units::metres)>;
-	using KilometresTuple = Types<UNITS_TYPE_COMBINE(units::kilometres)>;
+	using DecimetresTuple  = Types<UNITS_TYPE_COMBINE(units::decimetres)>;
+	using MetresTuple      = Types<UNITS_TYPE_COMBINE(units::metres)>;
+	using KilometresTuple  = Types<UNITS_TYPE_COMBINE(units::kilometres)>;
 
 	// Imperial
-	using ThousTuple = Types<UNITS_TYPE_COMBINE(units::thous)>;
-	using InchesTuple = Types<UNITS_TYPE_COMBINE(units::inches)>;
-	using LinksTuple = Types<UNITS_TYPE_COMBINE(units::links)>;
-	using FeetTuple = Types<UNITS_TYPE_COMBINE(units::feet)>;
-	using YardsTuple = Types<UNITS_TYPE_COMBINE(units::yards)>;
-	using RodsTuple = Types<UNITS_TYPE_COMBINE(units::rods)>;
-	using ChainsTuple = Types<UNITS_TYPE_COMBINE(units::chains)>;
+	using ThousTuple    = Types<UNITS_TYPE_COMBINE(units::thous)>;
+	using InchesTuple   = Types<UNITS_TYPE_COMBINE(units::inches)>;
+	using LinksTuple    = Types<UNITS_TYPE_COMBINE(units::links)>;
+	using FeetTuple     = Types<UNITS_TYPE_COMBINE(units::feet)>;
+	using YardsTuple    = Types<UNITS_TYPE_COMBINE(units::yards)>;
+	using RodsTuple     = Types<UNITS_TYPE_COMBINE(units::rods)>;
+	using ChainsTuple   = Types<UNITS_TYPE_COMBINE(units::chains)>;
 	using FurlongsTuple = Types<UNITS_TYPE_COMBINE(units::furlongs)>;
-	using MilesTuple = Types<UNITS_TYPE_COMBINE(units::miles)>;
-	using LeaguesTuple = Types<UNITS_TYPE_COMBINE(units::leagues)>;
+	using MilesTuple    = Types<UNITS_TYPE_COMBINE(units::miles)>;
+	using LeaguesTuple  = Types<UNITS_TYPE_COMBINE(units::leagues)>;
 
 	// Maritime
-	using FathomsTuple = Types<UNITS_TYPE_COMBINE(units::fathoms)>;
-	using CablesTuple = Types<UNITS_TYPE_COMBINE(units::cables)>;
+	using FathomsTuple       = Types<UNITS_TYPE_COMBINE(units::fathoms)>;
+	using CablesTuple        = Types<UNITS_TYPE_COMBINE(units::cables)>;
 	using NauticalMilesTuple = Types<UNITS_TYPE_COMBINE(units::nautical_miles)>;
 
 #undef UNITS_TYPE_COMBINE
