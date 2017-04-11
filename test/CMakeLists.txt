@@ -7,6 +7,11 @@ endif()
 include_directories (SYSTEM ${CMAKE_SOURCE_DIR}/external/googletest/googletest/include)
 include_directories (${CMAKE_SOURCE_DIR})
 
+if (UNITS_ENABLE_COVERAGE AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+	include (Coveralls)
+	coveralls_turn_on_coverage ()
+endif()
+
 macro (units_add_test TEST_NAME SOURCE_FILE)
 	set (TARGET_NAME ${TEST_NAME})
 	add_executable (${TARGET_NAME} ${SOURCE_FILE})
