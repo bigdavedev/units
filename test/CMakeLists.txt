@@ -2,6 +2,8 @@ project (test_units)
 
 if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	add_definitions ("-std=c++1z")
+	add_definitions ("-fno-elide-constructors")
+	add_definitions ("-fno-inline")
 endif()
 
 include_directories (SYSTEM ${CMAKE_SOURCE_DIR}/external/googletest/googletest/include)
