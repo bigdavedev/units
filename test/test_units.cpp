@@ -438,4 +438,18 @@ namespace TestUnits
 	                                               -1.0 + (std::numeric_limits<double>::epsilon() * 2),
 	                                               std::numeric_limits<double>::epsilon(),
 	                                               std::numeric_limits<double>::epsilon())));
+
+	class IsUnitTest : public UtilityTest
+	{
+	};
+
+	TEST_F(IsUnitTest, IsUnit_WhenGivenUnitType_WillReturnTrue)
+	{
+		EXPECT_TRUE(units::is_unit<base_unit>::value);
+	}
+
+	TEST_F(IsUnitTest, IsUnit_WhenGivenNonUnitType_WillReturnFalse)
+	{
+		EXPECT_FALSE(units::is_unit<double>::value);
+	}
 }

@@ -42,12 +42,12 @@ namespace units
 	struct unit;
 
 	template <typename T>
-	struct is_distance : std::false_type
+	struct is_unit : std::false_type
 	{
 	};
 
 	template <typename Rep, typename Ratio, typename UnitType>
-	struct is_distance<unit<Rep, Ratio, UnitType>> : std::true_type
+	struct is_unit<unit<Rep, Ratio, UnitType>> : std::true_type
 	{
 	};
 
@@ -92,24 +92,24 @@ namespace units
 		          class UnitType,
 		          class Rep2,
 		          bool = std::is_convertible<Rep2, CommonRep>::value>
-		struct distance_div_mod_base
+		struct unit_div_mod_base
 		{ // return type for unit / rep and unit % rep
 			using type = units::unit<CommonRep, Ratio, UnitType>;
 		};
 
 		template <class CommonRep, class Ratio, class UnitType, class Rep2>
-		struct distance_div_mod_base<CommonRep, Ratio, UnitType, Rep2, false>
+		struct unit_div_mod_base<CommonRep, Ratio, UnitType, Rep2, false>
 		{ // no return type
 		};
 
-		template <class Rep1, class Ratio1, class UnitType1, class Rep2, bool = is_distance<Rep2>::value>
-		struct distance_div_mod
+		template <class Rep1, class Ratio1, class UnitType1, class Rep2, bool = is_unit<Rep2>::value>
+		struct unit_div_mod
 		{ // no return type
 		};
 
 		template <class Rep1, class Ratio1, class UnitType1, class Rep2>
-		struct distance_div_mod<Rep1, Ratio1, UnitType1, Rep2, false>
-		    : distance_div_mod_base<typename std::common_type<Rep1, Rep2>::type, Ratio1, UnitType1, Rep2>
+		struct unit_div_mod<Rep1, Ratio1, UnitType1, Rep2, false>
+		    : unit_div_mod_base<typename std::common_type<Rep1, Rep2>::type, Ratio1, UnitType1, Rep2>
 		{ // return type for unit / rep and unit % rep
 		};
 	}
@@ -118,7 +118,7 @@ namespace units
 namespace std
 {
 	template <typename CommonRep, typename Ratio1, typename Ratio2, typename UnitType>
-	struct distance_common_type
+	struct unit_common_type
 	{
 	private:
 		using gcd_num    = units::detail::greatest_common_divisor<Ratio1::num, Ratio2::num>;
@@ -135,7 +135,7 @@ namespace std
 	struct common_type<units::unit<Rep1, Ratio1, UnitType1>, units::unit<Rep2, Ratio2, UnitType2>>
 	{
 		static_assert(std::is_same<UnitType1, UnitType2>::value, "Incompatible unit types");
-		using type = typename distance_common_type<std::common_type<Rep1, Rep2>, Ratio1, Ratio2, UnitType1>::type;
+		using type = typename unit_common_type<std::common_type<Rep1, Rep2>, Ratio1, Ratio2, UnitType1>::type;
 	};
 }
 
@@ -148,9 +148,9 @@ namespace units
 		};
 	}
 
-	template <typename ToDistance, typename Rep, typename Ratio, typename UnitType>
+	template <typename ToUnit, typename Rep, typename Ratio, typename UnitType>
 	constexpr auto unit_cast(unit<Rep, Ratio, UnitType> from) ->
-	    typename std::enable_if<is_distance<ToDistance>::value, ToDistance>::type;
+	    typename std::enable_if<is_unit<ToUnit>::value, ToUnit>::type;
 
 	template <typename Rep, typename Ratio, typename UnitType>
 	struct unit
@@ -268,7 +268,7 @@ namespace units
 
 	template <typename Rep1, typename Ratio, typename UnitType, typename Rep2>
 	constexpr auto operator%(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar) ->
-	    typename detail::distance_div_mod<Rep1, Ratio, UnitType, Rep2>::type;
+	    typename detail::unit_div_mod<Rep1, Ratio, UnitType, Rep2>::type;
 
 	// Relational operations
 	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
@@ -489,7 +489,7 @@ namespace units
 
 	template <typename Rep1, typename Ratio, typename UnitType, typename Rep2>
 	constexpr auto operator%(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar) ->
-	    typename detail::distance_div_mod<Rep1, Ratio, UnitType, Rep2>::type
+	    typename detail::unit_div_mod<Rep1, Ratio, UnitType, Rep2>::type
 	{
 		using result_type = unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>;
 		return result_type{result_type{lhs}.count()
@@ -577,7 +577,7 @@ namespace units
 
 	namespace detail
 	{
-		template <typename ToDistance,
+		template <typename ToUnit,
 		          typename Ratio,
 		          typename CommonType,
 		          bool RatioNumIsOne = false,
@@ -585,46 +585,46 @@ namespace units
 		struct unit_cast
 		{
 			template <typename Rep, typename Length, typename UnitType>
-			static constexpr ToDistance cast(unit<Rep, Length, UnitType> from)
+			static constexpr ToUnit cast(unit<Rep, Length, UnitType> from)
 			{
-				using ToRep = typename ToDistance::rep;
-				return ToDistance{static_cast<ToRep>(static_cast<CommonType>(from.count())
+				using ToRep = typename ToUnit::rep;
+				return ToUnit{static_cast<ToRep>(static_cast<CommonType>(from.count())
 				                                     / static_cast<CommonType>(Ratio::num)
 				                                     * static_cast<CommonType>(Ratio::den))};
 			}
 		};
 
-		template <typename ToDistance, typename Ratio, typename CommonType>
-		struct unit_cast<ToDistance, Ratio, CommonType, true, true>
+		template <typename ToUnit, typename Ratio, typename CommonType>
+		struct unit_cast<ToUnit, Ratio, CommonType, true, true>
 		{
 			template <typename Rep, typename Length, typename UnitType>
-			static constexpr ToDistance cast(unit<Rep, Length, UnitType> from)
+			static constexpr ToUnit cast(unit<Rep, Length, UnitType> from)
 			{
-				using ToRep = typename ToDistance::rep;
-				return ToDistance{static_cast<ToRep>(static_cast<CommonType>(from.count()))};
+				using ToRep = typename ToUnit::rep;
+				return ToUnit{static_cast<ToRep>(static_cast<CommonType>(from.count()))};
 			}
 		};
 
-		template <typename ToDistance, typename Ratio, typename CommonType>
-		struct unit_cast<ToDistance, Ratio, CommonType, true, false>
+		template <typename ToUnit, typename Ratio, typename CommonType>
+		struct unit_cast<ToUnit, Ratio, CommonType, true, false>
 		{
 			template <typename Rep, typename Length, typename UnitType>
-			static constexpr ToDistance cast(unit<Rep, Length, UnitType> from)
+			static constexpr ToUnit cast(unit<Rep, Length, UnitType> from)
 			{
-				using ToRep = typename ToDistance::rep;
-				return ToDistance{
+				using ToRep = typename ToUnit::rep;
+				return ToUnit{
 				    static_cast<ToRep>(static_cast<CommonType>(from.count()) * static_cast<CommonType>(Ratio::den))};
 			}
 		};
 
-		template <typename ToDistance, typename Ratio, typename CommonType>
-		struct unit_cast<ToDistance, Ratio, CommonType, false, true>
+		template <typename ToUnit, typename Ratio, typename CommonType>
+		struct unit_cast<ToUnit, Ratio, CommonType, false, true>
 		{
 			template <typename Rep, typename Length, typename UnitType>
-			static constexpr ToDistance cast(unit<Rep, Length, UnitType> from)
+			static constexpr ToUnit cast(unit<Rep, Length, UnitType> from)
 			{
-				using ToRep = typename ToDistance::rep;
-				return ToDistance{
+				using ToRep = typename ToUnit::rep;
+				return ToUnit{
 				    static_cast<ToRep>(static_cast<CommonType>(from.count()) / static_cast<CommonType>(Ratio::num))};
 			}
 		};
@@ -632,7 +632,7 @@ namespace units
 
 	template <typename ToUnit, typename Rep, typename Ratio, typename UnitType>
 	constexpr auto unit_cast(unit<Rep, Ratio, UnitType> from) ->
-	    typename std::enable_if<is_distance<ToUnit>::value, ToUnit>::type
+	    typename std::enable_if<is_unit<ToUnit>::value, ToUnit>::type
 	{
 		static_assert(std::is_same<typename ToUnit::unit_type, UnitType>::value, "Incompatible types");
 
