@@ -791,158 +791,170 @@ namespace units
 #ifndef UNITS_DISABLE_IOSTREAM
 	namespace detail
 	{
-		template <typename Ratio, typename UnitType>
-		std::string get_unit(Ratio, UnitType)
+		template <typename Ratio>
+		inline std::string get_prefix()
 		{
-			return std::string{};
+			return "";
 		}
 
 		template <>
-		std::string get_unit(nanometres::ratio, nanometres::unit_type)
+		inline std::string get_prefix<std::nano>()
 		{
-			return "nm";
+			return "n";
 		}
 
 		template <>
-		std::string get_unit(micrometres::ratio, micrometres::unit_type)
+		inline std::string get_prefix<std::micro>()
 		{
-			return "um";
+			return "u";
 		}
 
 		template <>
-		std::string get_unit(millimetres::ratio, millimetres::unit_type)
-		{
-			return "mm";
-		}
-
-		template <>
-		std::string get_unit(centimetres::ratio, centimetres::unit_type)
-		{
-			return "cm";
-		}
-
-		template <>
-		std::string get_unit(decimetres::ratio, decimetres::unit_type)
-		{
-			return "dm";
-		}
-
-		template <>
-		std::string get_unit(metres::ratio, metres::unit_type)
+		inline std::string get_prefix<std::milli>()
 		{
 			return "m";
 		}
 
 		template <>
-		std::string get_unit(kilometres::ratio, kilometres::unit_type)
+		inline std::string get_prefix<std::centi>()
 		{
-			return "km";
+			return "c";
 		}
 
 		template <>
-		std::string get_unit(thous::ratio, thous::unit_type)
+		inline std::string get_prefix<std::deci>()
+		{
+			return "d";
+		}
+
+		template <>
+		inline std::string get_prefix<std::kilo>()
+		{
+			return "k";
+		}
+
+		template <typename UnitType>
+		std::string get_unit()
+		{
+			return "";
+		}
+
+		template<>
+		std::string get_unit<unit_type::distance>()
+		{
+			return "m";
+		}
+
+		template <typename Ratio, typename UnitType>
+		std::string get_unit()
+		{
+			return get_prefix<Ratio>() + get_unit<UnitType>();
+		}
+
+		template <>
+		std::string get_unit<thous::ratio, unit_type::distance>()
 		{
 			return "th";
 		}
 
 		template <>
-		std::string get_unit(inches::ratio, inches::unit_type)
+		std::string get_unit<inches::ratio, unit_type::distance>()
 		{
 			return "in";
 		}
 
 		template <>
-		std::string get_unit(links::ratio, links::unit_type)
+		std::string get_unit<links::ratio, unit_type::distance>()
 		{
 			return "li";
 		}
 
 		template <>
-		std::string get_unit(feet::ratio, feet::unit_type)
+		std::string get_unit<feet::ratio, unit_type::distance>()
 		{
 			return "ft";
 		}
 
 		template <>
-		std::string get_unit(yards::ratio, yards::unit_type)
+		std::string get_unit<yards::ratio, unit_type::distance>()
 		{
 			return "yd";
 		}
 
 		template <>
-		std::string get_unit(rods::ratio, rods::unit_type)
+		std::string get_unit<rods::ratio, unit_type::distance>()
 		{
 			return "rd";
 		}
 
 		template <>
-		std::string get_unit(chains::ratio, chains::unit_type)
+		std::string get_unit<chains::ratio, unit_type::distance>()
 		{
 			return "ch";
 		}
 
 		template <>
-		std::string get_unit(furlongs::ratio, furlongs::unit_type)
+		std::string get_unit<furlongs::ratio, unit_type::distance>()
 		{
 			return "fur";
 		}
 
 		template <>
-		std::string get_unit(miles::ratio, miles::unit_type)
+		std::string get_unit<miles::ratio, unit_type::distance>()
 		{
 			return "mi";
 		}
 
 		template <>
-		std::string get_unit(leagues::ratio, leagues::unit_type)
+		std::string get_unit<leagues::ratio, unit_type::distance>()
 		{
 			return "lea";
 		}
 
 		template <>
-		std::string get_unit(fathoms::ratio, fathoms::unit_type)
+		std::string get_unit<fathoms::ratio, unit_type::distance>()
 		{
 			return "ftm";
 		}
 
 		template <>
-		std::string get_unit(cables::ratio, cables::unit_type)
+		std::string get_unit<cables::ratio, unit_type::distance>()
 		{
 			return "cb";
 		}
 
 		template <>
-		std::string get_unit(nautical_miles::ratio, nautical_miles::unit_type)
+		std::string get_unit<nautical_miles::ratio, unit_type::distance>()
 		{
 			return "nmi";
 		}
 
 		template <>
-		std::string get_unit(earth_radii::ratio, earth_radii::unit_type)
+		std::string get_unit<earth_radii::ratio, unit_type::distance>()
 		{
 			return "R";
 		}
 
 		template <>
-		std::string get_unit(lunar_distances::ratio, lunar_distances::unit_type)
+		std::string get_unit<lunar_distances::ratio, unit_type::distance>()
 		{
 			return "LD";
 		}
 
 		template <>
-		std::string get_unit(astronimical_units::ratio, astronimical_units::unit_type)
+		std::string get_unit<astronimical_units::ratio, unit_type::distance>()
 		{
 			return "AU";
 		}
 
 		template <>
-		std::string get_unit(light_years::ratio, light_years::unit_type)
+		std::string get_unit<light_years::ratio, unit_type::distance>()
 		{
 			return "ly";
 		}
 
 		template <>
-		std::string get_unit(parsecs::ratio, parsecs::unit_type)
+		std::string get_unit<parsecs::ratio, unit_type::distance>()
 		{
 			return "pc";
 		}
@@ -952,8 +964,7 @@ namespace units
 	std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
 	                                              unit<Rep, Ratio, UnitType> const&  u)
 	{
-		using Unit = unit<Rep, Ratio, UnitType>;
-		return os << u.count() << detail::get_unit(Ratio{}, UnitType{});
+		return os << u.count() << detail::get_unit<Ratio, UnitType>();
 	}
 #endif
 }
