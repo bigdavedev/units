@@ -26,16 +26,3 @@ units_add_test (test_units test_units.cpp)
 units_add_test (test_distance test_distance.cpp)
 units_add_test (test_streams test_streams.cpp)
 
-if (UNITS_ENABLE_COVERAGE)
-	set (CMAKE_MODULE_PATH
-		${CMAKE_MODULE_PATH}
-		${CMAKE_SOURCE_DIR}/external/JoakimSoderberg/coveralls-cmake/cmake
-	)
-	include (Coveralls)
-	coveralls_turn_on_coverage ()
-	
-	set (FILES ${CMAKE_SOURCE_DIR}/units.h)
-	message (STATUS "Measuring coverage for ${FILES}")
-	
-	coveralls_setup ("${FILES}" ${UNITS_ENABLE_COVERAGE_UPLOAD})
-endif()

@@ -43,5 +43,19 @@ if (UNITS_BUILD_TESTS)
 
 	enable_testing ()
 	add_subdirectory (test)
+
+	if (UNITS_ENABLE_COVERAGE)
+		set (CMAKE_MODULE_PATH
+			${CMAKE_MODULE_PATH}
+			${CMAKE_SOURCE_DIR}/external/JoakimSoderberg/coveralls-cmake/cmake
+		)
+		include (Coveralls)
+		coveralls_turn_on_coverage ()
+
+		set (FILES units.h)
+		message (STATUS "Measuring coverage for ${FILES}")
+
+		coveralls_setup ("${FILES}" ${UNITS_ENABLE_COVERAGE_UPLOAD})
+	endif()
 endif ()
 
