@@ -34,9 +34,8 @@ if (UNITS_ENABLE_COVERAGE)
 	include (Coveralls)
 	coveralls_turn_on_coverage ()
 	
-	get_filename_component (UNITS ../units.h ABSOLUTE)
-	
-	set (FILES ${UNITS})
+	set (FILES ${CMAKE_SOURCE_DIR}/units.h)
+	message (STATUS "Measuring coverage for ${FILES}")
 	
 	coveralls_setup ("${FILES}" ${UNITS_ENABLE_COVERAGE_UPLOAD})
 endif()
