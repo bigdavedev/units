@@ -51,7 +51,7 @@ if (UNITS_BUILD_TESTS)
 		)
 		include (Coveralls)
 
-		set (FILES units.h)
+		set (FILES units.h test/test_units.cpp test/test_distance.cpp test/test_streams.cpp)
 		message (STATUS "Measuring coverage for ${FILES}")
 
 		coveralls_setup ("${FILES}"
