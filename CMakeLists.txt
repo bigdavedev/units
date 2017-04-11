@@ -55,7 +55,10 @@ if (UNITS_BUILD_TESTS)
 		set (FILES units.h)
 		message (STATUS "Measuring coverage for ${FILES}")
 
-		coveralls_setup ("${FILES}" ${UNITS_ENABLE_COVERAGE_UPLOAD})
+		coveralls_setup ("${FILES}"
+		                 ${UNITS_ENABLE_COVERAGE_UPLOAD}
+		                 ${CMAKE_SOURCE_DIR}/external/JoakimSoderberg/coveralls-cmake/cmake
+		)
 	endif()
 endif ()
 
