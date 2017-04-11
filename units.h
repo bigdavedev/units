@@ -953,7 +953,7 @@ namespace units
 	                                              unit<Rep, Ratio, UnitType> const&  u)
 	{
 		using Unit = unit<Rep, Ratio, UnitType>;
-		return os << u.count() << detail::get_unit(Unit::ratio{}, Unit::unit_type{});
+		return os << u.count() << detail::get_unit(Ratio{}, UnitType{});
 	}
 #endif
 }
