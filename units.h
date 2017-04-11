@@ -834,134 +834,134 @@ namespace units
 		}
 
 		template <typename UnitType>
-		std::string get_unit()
+		inline std::string get_unit()
 		{
 			return "";
 		}
 
 		template<>
-		std::string get_unit<unit_type::distance>()
+		inline std::string get_unit<unit_type::distance>()
 		{
 			return "m";
 		}
 
 		template <typename Ratio, typename UnitType>
-		std::string get_unit()
+		inline std::string get_unit()
 		{
 			return get_prefix<Ratio>() + get_unit<UnitType>();
 		}
 
 		template <>
-		std::string get_unit<thous::ratio, unit_type::distance>()
+		inline std::string get_unit<thous::ratio, unit_type::distance>()
 		{
 			return "th";
 		}
 
 		template <>
-		std::string get_unit<inches::ratio, unit_type::distance>()
+		inline std::string get_unit<inches::ratio, unit_type::distance>()
 		{
 			return "in";
 		}
 
 		template <>
-		std::string get_unit<links::ratio, unit_type::distance>()
+		inline std::string get_unit<links::ratio, unit_type::distance>()
 		{
 			return "li";
 		}
 
 		template <>
-		std::string get_unit<feet::ratio, unit_type::distance>()
+		inline std::string get_unit<feet::ratio, unit_type::distance>()
 		{
 			return "ft";
 		}
 
 		template <>
-		std::string get_unit<yards::ratio, unit_type::distance>()
+		inline std::string get_unit<yards::ratio, unit_type::distance>()
 		{
 			return "yd";
 		}
 
 		template <>
-		std::string get_unit<rods::ratio, unit_type::distance>()
+		inline std::string get_unit<rods::ratio, unit_type::distance>()
 		{
 			return "rd";
 		}
 
 		template <>
-		std::string get_unit<chains::ratio, unit_type::distance>()
+		inline std::string get_unit<chains::ratio, unit_type::distance>()
 		{
 			return "ch";
 		}
 
 		template <>
-		std::string get_unit<furlongs::ratio, unit_type::distance>()
+		inline std::string get_unit<furlongs::ratio, unit_type::distance>()
 		{
 			return "fur";
 		}
 
 		template <>
-		std::string get_unit<miles::ratio, unit_type::distance>()
+		inline std::string get_unit<miles::ratio, unit_type::distance>()
 		{
 			return "mi";
 		}
 
 		template <>
-		std::string get_unit<leagues::ratio, unit_type::distance>()
+		inline std::string get_unit<leagues::ratio, unit_type::distance>()
 		{
 			return "lea";
 		}
 
 		template <>
-		std::string get_unit<fathoms::ratio, unit_type::distance>()
+		inline std::string get_unit<fathoms::ratio, unit_type::distance>()
 		{
 			return "ftm";
 		}
 
 		template <>
-		std::string get_unit<cables::ratio, unit_type::distance>()
+		inline std::string get_unit<cables::ratio, unit_type::distance>()
 		{
 			return "cb";
 		}
 
 		template <>
-		std::string get_unit<nautical_miles::ratio, unit_type::distance>()
+		inline std::string get_unit<nautical_miles::ratio, unit_type::distance>()
 		{
 			return "nmi";
 		}
 
 		template <>
-		std::string get_unit<earth_radii::ratio, unit_type::distance>()
+		inline std::string get_unit<earth_radii::ratio, unit_type::distance>()
 		{
 			return "R";
 		}
 
 		template <>
-		std::string get_unit<lunar_distances::ratio, unit_type::distance>()
+		inline std::string get_unit<lunar_distances::ratio, unit_type::distance>()
 		{
 			return "LD";
 		}
 
 		template <>
-		std::string get_unit<astronimical_units::ratio, unit_type::distance>()
+		inline std::string get_unit<astronimical_units::ratio, unit_type::distance>()
 		{
 			return "AU";
 		}
 
 		template <>
-		std::string get_unit<light_years::ratio, unit_type::distance>()
+		inline std::string get_unit<light_years::ratio, unit_type::distance>()
 		{
 			return "ly";
 		}
 
 		template <>
-		std::string get_unit<parsecs::ratio, unit_type::distance>()
+		inline std::string get_unit<parsecs::ratio, unit_type::distance>()
 		{
 			return "pc";
 		}
 	}
 
 	template <typename CharT, typename Traits, typename Rep, typename Ratio, typename UnitType>
-	std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
+	inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
 	                                              unit<Rep, Ratio, UnitType> const&  u)
 	{
 		return os << u.count() << detail::get_unit<Ratio, UnitType>();
