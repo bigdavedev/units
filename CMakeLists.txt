@@ -50,7 +50,6 @@ if (UNITS_BUILD_TESTS)
 			${CMAKE_SOURCE_DIR}/external/JoakimSoderberg/coveralls-cmake/cmake
 		)
 		include (Coveralls)
-		coveralls_turn_on_coverage ()
 
 		set (FILES units.h)
 		message (STATUS "Measuring coverage for ${FILES}")

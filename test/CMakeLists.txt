@@ -8,6 +8,10 @@ include_directories (SYSTEM ${CMAKE_SOURCE_DIR}/external/googletest/googletest/i
 include_directories (${CMAKE_SOURCE_DIR})
 
 if (UNITS_ENABLE_COVERAGE AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+	set (CMAKE_MODULE_PATH
+		${CMAKE_MODULE_PATH}
+		${CMAKE_SOURCE_DIR}/external/JoakimSoderberg/coveralls-cmake/cmake
+	)
 	include (Coveralls)
 	coveralls_turn_on_coverage ()
 endif()
