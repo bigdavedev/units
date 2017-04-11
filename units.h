@@ -143,9 +143,10 @@ namespace units
 {
 	namespace unit_type
 	{
-		struct distance
-		{
-		};
+		// clang-format off
+		struct distance {};
+		struct mass {};
+		// clang-format on
 	}
 
 	template <typename ToUnit, typename Rep, typename Ratio, typename UnitType>
@@ -240,6 +241,28 @@ namespace units
 	using astronimical_units = distance<long double, std::ratio<149597870700>>;
 	using light_years = distance<long double, std::ratio_multiply<std::ratio<94607304725808, 10>, kilometres::ratio>>;
 	using parsecs     = distance<long double, std::ratio_multiply<std::ratio<308567758146719, 10>, kilometres::ratio>>;
+
+	template <typename Rep, typename Ratio = std::ratio<1>>
+	using mass = unit<Rep, Ratio, unit_type::mass>;
+
+	// Metric
+	using grams = mass<double>;
+	using picograms = mass<double, std::pico>;
+	using nanograms = mass<double, std::nano>;
+	using micrograms = mass<double, std::micro>;
+	using milligrams = mass<double, std::milli>;
+	using kilograms = mass<double, std::kilo>;
+	using tons = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
+
+	// Imperial
+	using pounds = mass<double, std::ratio_multiply<std::ratio<45359237, 100000000>, kilograms::ratio>>;
+	using grains = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
+	using drams = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
+	using ounces = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
+	using us_hundredweight = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
+	using long_hundredweight = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
+	using short_ton = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
+	using long_ton = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
 
 	// Arithmetic operations
 	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
@@ -843,6 +866,12 @@ namespace units
 		inline std::string get_unit<unit_type::distance>()
 		{
 			return "m";
+		}
+
+		template<>
+		inline std::string get_unit<unit_type::mass>()
+		{
+			return "g";
 		}
 
 		template <typename Ratio, typename UnitType>
