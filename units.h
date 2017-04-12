@@ -84,8 +84,9 @@ namespace units
 		template <typename T>
 		auto fmod(T x, T y) -> typename std::enable_if<std::is_floating_point<T>::value, long long int>::type
 		{
-			return y != 0 ? x - std::trunc(x / y) * y : throw std::domain_error{"Dividing by zero!"};
-		};
+			return y != 0 ? static_cast<long long int>(x - std::trunc(x / y) * y)
+			              : throw std::domain_error{"Dividing by zero!"};
+		}
 
 		template <class CommonRep,
 		          class Ratio,
@@ -154,10 +155,10 @@ namespace units
 		typename std::enable_if<is_unit<ToUnit>::value, ToUnit>::type;
 
 	template <typename Type, typename Unit>
-	constexpr auto unit_cast(Unit from)
-	    ->typename std::enable_if<is_unit<Unit>::value
-	                                  && (std::is_integral<Type>::value || std::is_floating_point<Type>::value),
-	                              Type>::type;
+	constexpr auto unit_cast(Unit from) ->
+	    typename std::enable_if<is_unit<Unit>::value
+	                                && (std::is_integral<Type>::value || std::is_floating_point<Type>::value),
+	                            Type>::type;
 
 	template <typename Rep, typename Ratio, typename UnitType>
 	struct unit
@@ -465,14 +466,14 @@ namespace units
 	template <typename Rep, typename Ratio, typename UnitType>
 	unit<Rep, Ratio, UnitType>& unit<Rep, Ratio, UnitType>::operator%=(rep const scalar)
 	{
-		value = detail::fmod(value, scalar);
+		value = static_cast<rep>(detail::fmod(value, scalar));
 		return *this;
 	}
 
 	template <typename Rep, typename Ratio, typename UnitType>
 	unit<Rep, Ratio, UnitType>& unit<Rep, Ratio, UnitType>::operator%=(unit const other)
 	{
-		value = detail::fmod(value, other.count());
+		value = static_cast<rep>(detail::fmod(value, other.count()));
 		return *this;
 	}
 
@@ -511,7 +512,6 @@ namespace units
 	constexpr auto operator*(Rep1 const scalar, unit<Rep2, Ratio, UnitType> rhs)
 	    -> unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>
 	{
-		using result_type = unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>;
 		return rhs * scalar;
 	}
 
@@ -567,7 +567,6 @@ namespace units
 		using unit1       = unit<Rep1, Ratio1, UnitType1>;
 		using unit2       = unit<Rep2, Ratio2, UnitType2>;
 		using common_type = typename std::common_type<unit1, unit2>::type;
-		using common_rep  = typename common_type::rep;
 
 		return detail::unit_compare(unit_cast<common_type>(lhs).count(), unit_cast<common_type>(rhs).count());
 	}
@@ -575,10 +574,6 @@ namespace units
 	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
 	constexpr bool operator!=(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs)
 	{
-		using unit1       = unit<Rep1, Ratio1, UnitType1>;
-		using unit2       = unit<Rep2, Ratio2, UnitType2>;
-		using common_type = typename std::common_type<unit1, unit2>::type;
-
 		return !(lhs == rhs);
 	}
 

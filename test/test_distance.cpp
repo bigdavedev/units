@@ -61,14 +61,14 @@ namespace TestDistanceUnits
 	                               std::make_tuple(1_ch, units::metres{20.1168}),
 	                               std::make_tuple(1_fur, units::metres{201.168}),
 	                               std::make_tuple(1_mi, units::metres{1609.344}),
-	                               std::make_tuple(1_lea, units::metres{4828.032})));
+	                               std::make_tuple(1_lea, units::metres{4828.032})),);
 
 	INSTANTIATE_TEST_CASE_P(MaritimeToMetric,
 	                        NonMetricToMetricConstruction,
 	                        Values(std::make_tuple(1_ftm, units::metres{1.853184}),
 	                               std::make_tuple(1_cb, units::metres{185.3184}),
 	                               std::make_tuple(1_NM, units::metres{1853.184}),
-	                               std::make_tuple(1_nmi, units::metres{1853.184})));
+	                               std::make_tuple(1_nmi, units::metres{1853.184})),);
 
 	INSTANTIATE_TEST_CASE_P(AstronomicalToMetric,
 	                        NonMetricToMetricConstruction,
@@ -76,7 +76,7 @@ namespace TestDistanceUnits
 	                               std::make_tuple(1_LD, 384402000_m),
 	                               std::make_tuple(1_AU, 149597870700_m),
 	                               std::make_tuple(1_ly, 9460730472580800_m),
-	                               std::make_tuple(1_pc, 30856775814671900_m)));
+	                               std::make_tuple(1_pc, 30856775814671900_m)),);
 
 	template <typename T>
 	class MetricToNonMetricConstruction : public DistanceConstructionTest

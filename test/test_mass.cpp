@@ -47,7 +47,7 @@ namespace TestMassUnits
 	                               std::make_tuple(units::us_hundredweight{1}, units::kilograms{45.359237}),
 	                               std::make_tuple(units::long_hundredweight{1}, units::kilograms{50.80234544}),
 	                               std::make_tuple(units::short_ton{1}, units::kilograms{907.18474}),
-	                               std::make_tuple(units::long_ton{1}, units::kilograms{1016.0469088})));
+	                               std::make_tuple(units::long_ton{1}, units::kilograms{1016.0469088})),);
 
 	using namespace mass_literals;
 	template <typename T>

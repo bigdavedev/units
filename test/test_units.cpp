@@ -441,7 +441,7 @@ namespace TestUnits
 	                               std::make_tuple(-1.0,
 	                                               -1.0 + (std::numeric_limits<double>::epsilon() * 2),
 	                                               std::numeric_limits<double>::epsilon() * 2,
-	                                               std::numeric_limits<double>::epsilon())));
+	                                               std::numeric_limits<double>::epsilon())),);
 
 	class UnitCompareNotEqualTest : public UtilityTest, public WithParamInterface<UnitCompareTuple>
 	{
@@ -470,7 +470,7 @@ namespace TestUnits
 	                               std::make_tuple(-1.0,
 	                                               -1.0 + (std::numeric_limits<double>::epsilon() * 2),
 	                                               std::numeric_limits<double>::epsilon(),
-	                                               std::numeric_limits<double>::epsilon())));
+	                                               std::numeric_limits<double>::epsilon())),);
 
 	class IsUnitTest : public UtilityTest
 	{

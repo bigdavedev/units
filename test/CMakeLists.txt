@@ -4,6 +4,18 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	add_definitions ("-std=c++1z")
 	add_definitions ("-fno-elide-constructors")
 	add_definitions ("-fno-inline")
+	add_definitions ("-Wall")
+	add_definitions ("-Wextra")
+	add_definitions ("-Wpedantic")
+
+	set (EXTRA_LIBRARIES -pthread)
+else ()
+	add_definitions ("/W4")
+	add_definitions ("/WX")
+	add_definitions ("/Zl")
+	add_definitions ("/Za")
+
+	set (EXTRA_LIBRARIES)
 endif()
 
 include_directories (SYSTEM ${CMAKE_SOURCE_DIR}/external/googletest/googletest/include)
@@ -24,7 +36,7 @@ macro (units_add_test TEST_NAME SOURCE_FILE)
 	add_dependencies (${TARGET_NAME} gtest_main)
 
 	target_link_libraries (${TARGET_NAME}
-		-pthread
+		${EXTRA_LIBRARIES}
 		gtest_main
 	)
 
