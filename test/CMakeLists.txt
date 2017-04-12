@@ -49,4 +49,5 @@ units_add_test (test_units test_units.cpp)
 units_add_test (test_distance test_distance.cpp)
 units_add_test (test_streams test_streams.cpp)
 units_add_test (test_mass test_mass.cpp)
+units_add_test (test_area test_area.cpp)
 

@@ -334,7 +334,7 @@ namespace TestUnits
 	{
 		auto result = units::unit_cast<base_unit>(base_unit{1000});
 
-		EXPECT_TRUE((std::is_same<decltype(result), base_unit>::value));
+		EXPECT_TRUE(typeid(result) == typeid(base_unit));
 		EXPECT_EQ(1000, result.count());
 	}
 
@@ -342,7 +342,7 @@ namespace TestUnits
 	{
 		auto result = units::unit_cast<kilo_unit>(base_unit_int{1000});
 
-		EXPECT_TRUE((std::is_same<decltype(result), kilo_unit>::value));
+		EXPECT_TRUE(typeid(result) == typeid(kilo_unit));
 		EXPECT_EQ(kilo_unit{1}, result);
 	}
 
@@ -350,7 +350,7 @@ namespace TestUnits
 	{
 		auto result = units::unit_cast<base_unit>(kilo_unit{1});
 
-		EXPECT_TRUE((std::is_same<decltype(result), base_unit>::value));
+		EXPECT_TRUE(typeid(result) == typeid(base_unit));
 		EXPECT_EQ(base_unit{1000}, result);
 	}
 
@@ -358,7 +358,7 @@ namespace TestUnits
 	{
 		auto result = units::unit_cast<kilo_unit_int>(base_unit_int{999});
 
-		EXPECT_TRUE((std::is_same<decltype(result), kilo_unit_int>::value));
+		EXPECT_TRUE(typeid(result) == typeid(kilo_unit_int));
 		EXPECT_EQ(kilo_unit_int{0}, result);
 	}
 
@@ -366,7 +366,7 @@ namespace TestUnits
 	{
 		auto result = units::unit_cast<base_unit::rep>(base_unit{1});
 
-		EXPECT_TRUE((std::is_same<decltype(result), base_unit::rep>::value));
+		EXPECT_TRUE(typeid(result) == typeid(base_unit::rep));
 		EXPECT_EQ(1, result);
 	}
 
@@ -374,7 +374,7 @@ namespace TestUnits
 	{
 		auto result = units::unit_cast<int>(base_unit{1});
 
-		EXPECT_TRUE((std::is_same<decltype(result), int>::value));
+		EXPECT_TRUE(typeid(result) == typeid(int));
 		EXPECT_EQ(1, result);
 	}
 

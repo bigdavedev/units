@@ -138,6 +138,12 @@ namespace std
 		static_assert(std::is_same<UnitType1, UnitType2>::value, "Incompatible unit types");
 		using type = typename unit_common_type<std::common_type<Rep1, Rep2>, Ratio1, Ratio2, UnitType1>::type;
 	};
+
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2>
+	struct common_type<units::unit<Rep1, Ratio1, UnitType1>, Rep2>;
+
+	template <typename Rep1, typename Rep2, typename Ratio, typename UnitType>
+	struct common_type<Rep1, units::unit<Rep2, Ratio, UnitType>>;
 }
 
 namespace units
@@ -147,6 +153,8 @@ namespace units
 		// clang-format off
 		struct distance {};
 		struct mass {};
+
+		struct area {};
 		// clang-format on
 	}
 
@@ -198,6 +206,14 @@ namespace units
 
 	private:
 		rep value;
+	};
+
+	template<typename Unit>
+	struct squared
+	{
+		using ratio = std::ratio_multiply<typename Unit::ratio, typename Unit::ratio>;
+
+		using unit_ratio = typename Unit::ratio;
 	};
 
 	template <typename Rep, typename Ratio = std::ratio<1>>
@@ -271,6 +287,12 @@ namespace units
 	using short_ton          = mass<double, std::ratio_multiply<std::ratio<2000>, pounds::ratio>>;
 	using long_ton           = mass<double, std::ratio_multiply<std::ratio<2240>, pounds::ratio>>;
 
+	template <typename Rep, typename Ratio>
+	using area = unit<Rep, typename squared<unit<Rep, Ratio, unit_type::distance>>::ratio, unit_type::area>;
+
+	using square_metres = area<double, metres::ratio>;
+	using square_feet = area<double, feet::ratio>;
+
 	// Arithmetic operations
 	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
 	constexpr auto operator+(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs) ->
@@ -281,12 +303,19 @@ namespace units
 	    typename std::common_type<unit<Rep1, Ratio1, UnitType1>, unit<Rep2, Ratio2, UnitType2>>::type;
 
 	template <typename Rep1, typename Ratio, typename UnitType, typename Rep2>
-	constexpr auto operator*(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar)
-	    -> unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>;
+	constexpr auto operator*(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar) ->
+	    typename std::enable_if<std::is_floating_point<Rep2>::value || std::is_integral<Rep2>::value,
+	                            unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>>::type;
 
 	template <typename Rep1, typename Rep2, typename Ratio, typename UnitType>
-	constexpr auto operator*(Rep1 const scalar, unit<Rep2, Ratio, UnitType> rhs)
-	    -> unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>;
+	constexpr auto operator*(Rep1 const scalar, unit<Rep2, Ratio, UnitType> rhs) ->
+	    typename std::enable_if<std::is_floating_point<Rep1>::value || std::is_integral<Rep1>::value,
+	                            unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>>::type;
+
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
+	constexpr auto operator*(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs) ->
+		typename std::enable_if<std::is_same<UnitType1, UnitType2>::value,
+		unit<Rep1, typename squared<decltype(lhs)>::ratio, unit_type::area >> ::type;
 
 	template <typename Rep1, typename Ratio, typename UnitType, typename Rep2>
 	constexpr auto operator/(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar)
@@ -501,18 +530,29 @@ namespace units
 	}
 
 	template <typename Rep1, typename Ratio, typename UnitType, typename Rep2>
-	constexpr auto operator*(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar)
-	    -> unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>
+	constexpr auto operator*(unit<Rep1, Ratio, UnitType> lhs, Rep2 const scalar) ->
+	    typename std::enable_if<std::is_floating_point<Rep2>::value || std::is_integral<Rep2>::value,
+	                            unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>>::type
 	{
 		using result_type = unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>;
 		return static_cast<result_type>(static_cast<result_type>(lhs).count() * scalar);
 	}
 
 	template <typename Rep1, typename Rep2, typename Ratio, typename UnitType>
-	constexpr auto operator*(Rep1 const scalar, unit<Rep2, Ratio, UnitType> rhs)
-	    -> unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>
+	constexpr auto operator*(Rep1 const scalar, unit<Rep2, Ratio, UnitType> rhs) ->
+	    typename std::enable_if<std::is_floating_point<Rep1>::value || std::is_integral<Rep1>::value,
+	                            unit<typename std::common_type<Rep1, Rep2>::type, Ratio, UnitType>>::type
 	{
 		return rhs * scalar;
+	}
+
+	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
+	constexpr auto operator*(unit<Rep1, Ratio1, UnitType1> lhs, unit<Rep2, Ratio2, UnitType2> rhs) ->
+	    typename std::enable_if<std::is_same<UnitType1, UnitType2>::value,
+	                            unit<Rep1, typename squared<decltype(lhs)>::ratio, unit_type::area>>::type
+	{
+		using result_type = unit<Rep1, typename squared<decltype(lhs)>::ratio, unit_type::area>;
+		return result_type{lhs.count() * unit_cast<decltype(lhs)>(rhs).count()};
 	}
 
 	template <typename Rep1, typename Ratio, typename UnitType, typename Rep2>
@@ -1110,6 +1150,18 @@ namespace units
 		inline std::string get_unit<us_hundredweight::ratio, unit_type::mass>()
 		{
 			return "cwt";
+		}
+
+		template <>
+		inline std::string get_unit<square_metres::ratio, unit_type::area>()
+		{
+			return "sqm";
+		}
+
+		template <>
+		inline std::string get_unit<square_feet::ratio, unit_type::area>()
+		{
+			return "sqft";
 		}
 	}
 
