@@ -151,7 +151,13 @@ namespace units
 
 	template <typename ToUnit, typename Rep, typename Ratio, typename UnitType>
 	constexpr auto unit_cast(unit<Rep, Ratio, UnitType> from) ->
-	    typename std::enable_if<is_unit<ToUnit>::value, ToUnit>::type;
+		typename std::enable_if<is_unit<ToUnit>::value, ToUnit>::type;
+
+	template <typename Type, typename Unit>
+	constexpr auto unit_cast(Unit from)
+	    ->typename std::enable_if<is_unit<Unit>::value
+	                                  && (std::is_integral<Type>::value || std::is_floating_point<Type>::value),
+	                              Type>::type;
 
 	template <typename Rep, typename Ratio, typename UnitType>
 	struct unit
@@ -673,17 +679,26 @@ namespace units
 
 	template <typename ToUnit, typename Rep, typename Ratio, typename UnitType>
 	constexpr auto unit_cast(unit<Rep, Ratio, UnitType> from) ->
-	    typename std::enable_if<is_unit<ToUnit>::value, ToUnit>::type
+		typename std::enable_if<is_unit<ToUnit>::value, ToUnit>::type
 	{
 		static_assert(std::is_same<typename ToUnit::unit_type, UnitType>::value, "Incompatible types");
 
-		using ToRatio     = typename ToUnit::ratio;
-		using ToRep       = typename ToUnit::rep;
-		using CommonType  = typename std::common_type<ToRep, Rep, intmax_t>::type;
+		using ToRatio = typename ToUnit::ratio;
+		using ToRep = typename ToUnit::rep;
+		using CommonType = typename std::common_type<ToRep, Rep, intmax_t>::type;
 		using CommonRatio = std::ratio_divide<ToRatio, Ratio>;
 
 		return detail::unit_cast<ToUnit, CommonRatio, CommonType, CommonRatio::num == 1, CommonRatio::den == 1>::cast(
-		    from);
+			from);
+	}
+
+	template <typename Type, typename Unit>
+	constexpr auto unit_cast(Unit from)
+		->typename std::enable_if<is_unit<Unit>::value
+		&& (std::is_integral<Type>::value || std::is_floating_point<Type>::value),
+		Type>::type
+	{
+		return static_cast<Type>(from.count());
 	}
 }
 

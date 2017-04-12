@@ -333,25 +333,49 @@ namespace TestUnits
 	TEST_F(UnitCastTest, UnitCast_WhenCastingToSameType_WillYieldNoConversion)
 	{
 		auto result = units::unit_cast<base_unit>(base_unit{1000});
+
+		EXPECT_TRUE((std::is_same<decltype(result), base_unit>::value));
 		EXPECT_EQ(1000, result.count());
 	}
 
 	TEST_F(UnitCastTest, UnitCast_WhenCastingToUnitWithDifferentRatio_WillYieldConversionToThatType)
 	{
 		auto result = units::unit_cast<kilo_unit>(base_unit_int{1000});
+
+		EXPECT_TRUE((std::is_same<decltype(result), kilo_unit>::value));
 		EXPECT_EQ(kilo_unit{1}, result);
 	}
 
 	TEST_F(UnitCastTest, UnitCast_WhenCastingToFinerUnit_WillYielConversionToThatType)
 	{
 		auto result = units::unit_cast<base_unit>(kilo_unit{1});
+
+		EXPECT_TRUE((std::is_same<decltype(result), base_unit>::value));
 		EXPECT_EQ(base_unit{1000}, result);
 	}
 
 	TEST_F(UnitCastTest, UnitCast_WhenCastingFromHalfUnitToWhole_WillRoundDown)
 	{
 		auto result = units::unit_cast<kilo_unit_int>(base_unit_int{999});
+
+		EXPECT_TRUE((std::is_same<decltype(result), kilo_unit_int>::value));
 		EXPECT_EQ(kilo_unit_int{0}, result);
+	}
+
+	TEST_F(UnitCastTest, UnitCast_WillCastToUnderlyingType)
+	{
+		auto result = units::unit_cast<base_unit::rep>(base_unit{1});
+
+		EXPECT_TRUE((std::is_same<decltype(result), base_unit::rep>::value));
+		EXPECT_EQ(1, result);
+	}
+
+	TEST_F(UnitCastTest, UnitCast_WillCastToTypeCompatibleWithUnderlyingType)
+	{
+		auto result = units::unit_cast<int>(base_unit{1});
+
+		EXPECT_TRUE((std::is_same<decltype(result), int>::value));
+		EXPECT_EQ(1, result);
 	}
 
 	class UtilityTest : public Test
