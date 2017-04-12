@@ -8,7 +8,9 @@ using testing::Values;
 
 namespace TestUnits
 {
-	struct base_unit_type{};
+	struct base_unit_type
+	{
+	};
 
 	using base_unit = units::unit<double, std::ratio<1>, base_unit_type>;
 	using kilo_unit = units::unit<double, std::kilo, base_unit_type>;
@@ -16,7 +18,22 @@ namespace TestUnits
 
 	using base_unit_int = units::unit<int, std::ratio<1>, base_unit_type>;
 	using kilo_unit_int = units::unit<int, std::kilo, base_unit_type>;
-	
+}
+
+namespace units
+{
+	namespace detail
+	{
+		template <>
+		inline std::string get_unit<TestUnits::base_unit_type>()
+		{
+			return "";
+		}
+	}
+}
+
+namespace TestUnits
+{
 	class UnitConstructorTest : public Test
 	{
 	};
@@ -39,10 +56,7 @@ namespace TestUnits
 		base_unit unit{1};
 	};
 
-	TEST_F(UnitBaseTest, Count_WillReturnCorrectValue)
-	{
-		EXPECT_EQ(1, unit.count());
-	}
+	TEST_F(UnitBaseTest, Count_WillReturnCorrectValue) { EXPECT_EQ(1, unit.count()); }
 
 	class UnitUnaryOperatorTest : public UnitBaseTest
 	{
@@ -56,7 +70,7 @@ namespace TestUnits
 
 	TEST_F(UnitUnaryOperatorTest, UnaryMinus_WhenValueIsNegative_WillReturnPositiveValue)
 	{
-		unit    = base_unit{-1};
+		unit        = base_unit{-1};
 		auto result = -unit;
 		EXPECT_EQ(base_unit{1}, result);
 	}
@@ -69,7 +83,7 @@ namespace TestUnits
 
 	TEST_F(UnitUnaryOperatorTest, UnaryPlus_WhenValueIsNegative_WillReturnNegativeValue)
 	{
-		unit    = base_unit{-1};
+		unit        = base_unit{-1};
 		auto result = +unit;
 		EXPECT_EQ(base_unit{-1}, result);
 	}
@@ -311,7 +325,7 @@ namespace TestUnits
 	{
 		EXPECT_FALSE(nano_unit{999999999} >= base_unit{1});
 	}
-	
+
 	class UnitCastTest : public UnitBaseTest
 	{
 	};
@@ -341,26 +355,21 @@ namespace TestUnits
 	}
 
 	class UtilityTest : public Test
-	{};
+	{
+	};
 
 	TEST_F(UtilityTest, FMod_WhenGivenZeroForY_WillThrowDomainError)
 	{
 		EXPECT_THROW(units::detail::fmod(1.0, 0.0), std::domain_error);
 	}
 
-	TEST_F(UtilityTest, Abs_WhenValueIsPositive_WillReturnPositiveValue)
-	{
-		EXPECT_EQ(1, units::detail::abs(1));
-	}
+	TEST_F(UtilityTest, Abs_WhenValueIsPositive_WillReturnPositiveValue) { EXPECT_EQ(1, units::detail::abs(1)); }
 
-	TEST_F(UtilityTest, Abs_WhenValueIsNegative_WillReturnPositiveValue)
-	{
-		EXPECT_EQ(1, units::detail::abs(-1));
-	}
+	TEST_F(UtilityTest, Abs_WhenValueIsNegative_WillReturnPositiveValue) { EXPECT_EQ(1, units::detail::abs(-1)); }
 
 	TEST_F(UtilityTest, Abs_WhenValueIsNegativeZero_WillReturnPositiveValue)
 	{
-		EXPECT_EQ(double{ 0 }, units::detail::abs(double{ -0 }));
+		EXPECT_EQ(double{0}, units::detail::abs(double{-0}));
 	}
 
 	using UnitCompareTuple = std::tuple<double, double, double, double>;
@@ -443,13 +452,7 @@ namespace TestUnits
 	{
 	};
 
-	TEST_F(IsUnitTest, IsUnit_WhenGivenUnitType_WillReturnTrue)
-	{
-		EXPECT_TRUE(units::is_unit<base_unit>::value);
-	}
+	TEST_F(IsUnitTest, IsUnit_WhenGivenUnitType_WillReturnTrue) { EXPECT_TRUE(units::is_unit<base_unit>::value); }
 
-	TEST_F(IsUnitTest, IsUnit_WhenGivenNonUnitType_WillReturnFalse)
-	{
-		EXPECT_FALSE(units::is_unit<double>::value);
-	}
+	TEST_F(IsUnitTest, IsUnit_WhenGivenNonUnitType_WillReturnFalse) { EXPECT_FALSE(units::is_unit<double>::value); }
 }

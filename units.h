@@ -893,9 +893,18 @@ namespace units
 	namespace detail
 	{
 		template <typename Ratio>
-		inline std::string get_prefix()
+		inline std::string get_prefix();
+
+		template <>
+		inline std::string get_prefix<std::ratio<1>>()
 		{
 			return "";
+		}
+
+		template <>
+		inline std::string get_prefix<std::pico>()
+		{
+			return "p";
 		}
 
 		template <>
@@ -935,10 +944,7 @@ namespace units
 		}
 
 		template <typename UnitType>
-		inline std::string get_unit()
-		{
-			return "";
-		}
+		inline std::string get_unit();
 
 		template<>
 		inline std::string get_unit<unit_type::distance>()
@@ -1065,11 +1071,41 @@ namespace units
 		{
 			return "pc";
 		}
+
+		template <>
+		inline std::string get_unit<grains::ratio, unit_type::mass>()
+		{
+			return "gr";
+		}
+
+		template <>
+		inline std::string get_unit<drams::ratio, unit_type::mass>()
+		{
+			return "dr";
+		}
+
+		template <>
+		inline std::string get_unit<ounces::ratio, unit_type::mass>()
+		{
+			return "oz";
+		}
+
+		template <>
+		inline std::string get_unit<pounds::ratio, unit_type::mass>()
+		{
+			return "lb";
+		}
+
+		template <>
+		inline std::string get_unit<us_hundredweight::ratio, unit_type::mass>()
+		{
+			return "cwt";
+		}
 	}
 
 	template <typename CharT, typename Traits, typename Rep, typename Ratio, typename UnitType>
 	inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os,
-	                                              unit<Rep, Ratio, UnitType> const&  u)
+	                                                     unit<Rep, Ratio, UnitType> const&  u)
 	{
 		return os << u.count() << detail::get_unit<Ratio, UnitType>();
 	}
