@@ -357,6 +357,24 @@ inline namespace literals
 		constexpr units::light_years operator"" _ly(unsigned long long int dist);
 		constexpr units::parsecs operator"" _pc(unsigned long long int dist);
 	}
+
+	namespace mass_literals
+	{
+		// Metric
+		constexpr units::picograms operator"" _pg(unsigned long long int mass);
+		constexpr units::nanograms operator"" _ng(unsigned long long int mass);
+		constexpr units::micrograms operator"" _ug(unsigned long long int mass);
+		constexpr units::milligrams operator"" _mg(unsigned long long int mass);
+		constexpr units::grams operator"" _g(unsigned long long int mass);
+		constexpr units::kilograms operator"" _kg(unsigned long long int mass);
+
+		// Imperial
+		constexpr units::grains operator"" _gr(unsigned long long int mass);
+		constexpr units::drams operator"" _dr(unsigned long long int mass);
+		constexpr units::ounces operator"" _oz(unsigned long long int mass);
+		constexpr units::pounds operator"" _lb(unsigned long long int mass);
+		constexpr units::us_hundredweight operator"" _cwr(unsigned long long int mass);
+	}
 }
 
 namespace units
@@ -805,6 +823,66 @@ inline namespace literals
 		constexpr units::parsecs operator"" _pc(unsigned long long int dist)
 		{
 			return units::parsecs{static_cast<units::parsecs::rep>(dist)};
+		}
+	}
+
+	namespace mass_literals
+	{
+		// Metric
+		constexpr units::picograms operator"" _pg(unsigned long long int mass)
+		{
+			return units::picograms{static_cast<units::picograms::rep>(mass)};
+		}
+
+		constexpr units::nanograms operator"" _ng(unsigned long long int mass)
+		{
+			return units::nanograms{static_cast<units::nanograms::rep>(mass)};
+		}
+
+		constexpr units::micrograms operator"" _ug(unsigned long long int mass)
+		{
+			return units::micrograms{static_cast<units::micrograms::rep>(mass)};
+		}
+
+		constexpr units::milligrams operator"" _mg(unsigned long long int mass)
+		{
+			return units::milligrams{static_cast<units::milligrams::rep>(mass)};
+		}
+
+		constexpr units::grams operator"" _g(unsigned long long int mass)
+		{
+			return units::grams{static_cast<units::grams::rep>(mass)};
+		}
+
+		constexpr units::kilograms operator"" _kg(unsigned long long int mass)
+		{
+			return units::kilograms{static_cast<units::kilograms::rep>(mass)};
+		}
+
+		// Imperial
+		constexpr units::grains operator"" _gr(unsigned long long int mass)
+		{
+			return units::grains{static_cast<units::grains::rep>(mass)};
+		}
+
+		constexpr units::drams operator"" _dr(unsigned long long int mass)
+		{
+			return units::drams{static_cast<units::drams::rep>(mass)};
+		}
+
+		constexpr units::ounces operator"" _oz(unsigned long long int mass)
+		{
+			return units::ounces{static_cast<units::ounces::rep>(mass)};
+		}
+
+		constexpr units::pounds operator"" _lb(unsigned long long int mass)
+		{
+			return units::pounds{static_cast<units::pounds::rep>(mass)};
+		}
+
+		constexpr units::us_hundredweight operator"" _cwt(unsigned long long int mass)
+		{
+			return units::us_hundredweight{static_cast<units::us_hundredweight::rep>(mass)};
 		}
 	}
 }
