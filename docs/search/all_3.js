@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['unit',['unit',['../structunits_1_1unit.html',1,'units']]],
-  ['units',['units',['../namespaceunits.html',1,'']]]
+  ['mass',['mass',['../structunits_1_1unit__type_1_1mass.html',1,'units::unit_type']]]
 ];
