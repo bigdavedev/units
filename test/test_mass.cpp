@@ -15,8 +15,10 @@ namespace TestMassUnits
 {
 	namespace
 	{
-		auto mass_conversion_lookup = std::unordered_map<std::type_index, double>{
+		auto imperial_to_metric_lookup = std::unordered_map<std::type_index, double>{
 		    // Imperial to Metric
+		    {std::type_index{typeid(units::grains)}, 0.06479891},
+		    {std::type_index{typeid(units::drams)}, 1.7718451953125},
 		    {std::type_index{typeid(units::pounds)}, 453.59237}
 		    // End of lookup table
 		};
@@ -27,8 +29,9 @@ namespace TestMassUnits
 	};
 
 	class NonMetricToMetricConstruction : public MassConstructionTest,
-		public WithParamInterface<std::tuple<units::grams, units::grams>>
-	{};
+	                                      public WithParamInterface<std::tuple<units::kilograms, units::kilograms>>
+	{
+	};
 
 	TEST_P(NonMetricToMetricConstruction, Contructor_WhenGivenConvertibleType_WillYieldCorrectConversion)
 	{
@@ -36,8 +39,15 @@ namespace TestMassUnits
 	}
 
 	INSTANTIATE_TEST_CASE_P(ImperialToMetric,
-							NonMetricToMetricConstruction,
-							Values(std::make_tuple(units::pounds{ 1 }, units::grams{ 453.59237 })));
+	                        NonMetricToMetricConstruction,
+	                        Values(std::make_tuple(units::grains{1}, units::kilograms{0.00006479891}),
+	                               std::make_tuple(units::drams{1}, units::kilograms{0.0017718451953125}),
+	                               std::make_tuple(units::ounces{1}, units::kilograms{0.028349523125}),
+	                               std::make_tuple(units::pounds{1}, units::kilograms{0.45359237}),
+	                               std::make_tuple(units::us_hundredweight{1}, units::kilograms{45.359237}),
+	                               std::make_tuple(units::long_hundredweight{1}, units::kilograms{50.80234544}),
+	                               std::make_tuple(units::short_ton{1}, units::kilograms{907.18474}),
+	                               std::make_tuple(units::long_ton{1}, units::kilograms{1016.0469088})));
 
 	//template <typename T>
 	//class LiteralsTest : public Test

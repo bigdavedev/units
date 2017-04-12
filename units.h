@@ -246,23 +246,23 @@ namespace units
 	using mass = unit<Rep, Ratio, unit_type::mass>;
 
 	// Metric
-	using grams = mass<double>;
-	using picograms = mass<double, std::pico>;
-	using nanograms = mass<double, std::nano>;
+	using picograms  = mass<double, std::pico>;
+	using nanograms  = mass<double, std::nano>;
 	using micrograms = mass<double, std::micro>;
 	using milligrams = mass<double, std::milli>;
-	using kilograms = mass<double, std::kilo>;
-	using tons = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
+	using grams      = mass<double>;
+	using kilograms  = mass<double, std::kilo>;
+	using tons       = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
 
 	// Imperial
-	using pounds = mass<double, std::ratio_multiply<std::ratio<45359237, 100000000>, kilograms::ratio>>;
-	using grains = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
-	using drams = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
-	using ounces = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
-	using us_hundredweight = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
-	using long_hundredweight = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
-	using short_ton = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
-	using long_ton = mass<double, std::ratio_multiply<std::ratio<1000>, kilograms::ratio>>;
+	using pounds             = mass<double, std::ratio_multiply<std::ratio<45359237, 100000000>, kilograms::ratio>>;
+	using grains             = mass<double, std::ratio_divide<pounds::ratio, std::ratio<7000>>>;
+	using drams              = mass<double, std::ratio_multiply<std::ratio<2734375, 100000>, grains::ratio>>;
+	using ounces             = mass<double, std::ratio_multiply<std::ratio<16>, drams::ratio>>;
+	using us_hundredweight   = mass<double, std::ratio_multiply<std::ratio<100>, pounds::ratio>>;
+	using long_hundredweight = mass<double, std::ratio_multiply<std::ratio<112>, pounds::ratio>>;
+	using short_ton          = mass<double, std::ratio_multiply<std::ratio<2000>, pounds::ratio>>;
+	using long_ton           = mass<double, std::ratio_multiply<std::ratio<2240>, pounds::ratio>>;
 
 	// Arithmetic operations
 	template <typename Rep1, typename Ratio1, typename UnitType1, typename Rep2, typename Ratio2, typename UnitType2>
