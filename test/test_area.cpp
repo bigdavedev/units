@@ -17,9 +17,11 @@ namespace TestAreaUnits
 
 	TEST_F(AreaBaseTest, MetricMultiplication_WhenUnitsAreCompatible_WillReturnUnitsSquared)
 	{
-		constexpr auto result = 2_m * 2_m;
+		constexpr auto result = 1_m * 1_m;
 
-		EXPECT_EQ(units::square_metres{4}, result);
+		std::cout << result << std::endl;
+
+		EXPECT_EQ(units::square_centimetres{10000}, result);
 		EXPECT_TRUE(typeid(result) == typeid(units::square_metres));
 	}
 

@@ -291,6 +291,7 @@ namespace units
 	using area = unit<Rep, typename squared<unit<Rep, Ratio, unit_type::distance>>::ratio, unit_type::area>;
 
 	using square_metres = area<double, metres::ratio>;
+	using square_centimetres = area<double, centimetres::ratio>;
 	using square_feet = area<double, feet::ratio>;
 
 	// Arithmetic operations
@@ -1156,6 +1157,12 @@ namespace units
 		inline std::string get_unit<square_metres::ratio, unit_type::area>()
 		{
 			return "sqm";
+		}
+
+		template <>
+		inline std::string get_unit<square_centimetres::ratio, unit_type::area>()
+		{
+			return "sqcm";
 		}
 
 		template <>
