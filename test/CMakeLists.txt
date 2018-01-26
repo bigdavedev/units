@@ -1,7 +1,7 @@
 project (test_units)
 
 if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-	add_definitions ("-std=c++1z")
+	#add_definitions ("-std=c++1z")
 	add_definitions ("-fno-elide-constructors")
 	add_definitions ("-fno-inline")
 	add_definitions ("-Wall")
@@ -34,6 +34,12 @@ macro (units_add_test TEST_NAME SOURCE_FILE)
 	set (TARGET_NAME ${TEST_NAME})
 	add_executable (${TARGET_NAME} ${SOURCE_FILE})
 	add_dependencies (${TARGET_NAME} gtest_main)
+
+	set_target_properties(${TEST_NAME}
+	                      PROPERTIES
+	                          CXX_STANDARD 14
+	                          CXX_EXTENSIONS OFF
+	                          CXX_STANDARD_REQUIRED TRUE)
 
 	target_link_libraries (${TARGET_NAME}
 		${EXTRA_LIBRARIES}

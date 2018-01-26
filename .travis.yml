@@ -1,76 +1,193 @@
 sudo: false
 language: generic
 
+os: linux
+dist: trusty
+
+cache:
+  directories:
+    - ${TRAVIS_BUILD_DIR}/deps/cmake
+
 matrix:
   include:
-    - os: linux
-      env: COMPILER_NAME=g++ CXX=g++-6 CC=gcc-6
-      addons:
+    ##======================
+    ## Linux
+    ##======================
+
+    ##===============
+    ## GCC
+    ##===============
+    - env: BUILD_TYPE=Debug COMPILER_NAME=gcc CXX=g++-7 CC=gcc-7
+      addons: &gcc7
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+            - gcc-7
+            - g++-7
+            - libncurses5-dev
+
+    - env: BUILD_TYPE=Release COMPILER_NAME=gcc CXX=g++-7 CC=gcc-7
+      addons: *gcc7
+
+    - env: BUILD_TYPE=Debug COMPILER_NAME=gcc CXX=g++-6 CC=gcc-6
+      addons: &gcc6
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-6
             - g++-6
             - libncurses5-dev
 
-    - os: linux
-      env: COMPILER_NAME=g++ CXX=g++-5 CC=gcc-5
-      addons:
+    - env: BUILD_TYPE=Release COMPILER_NAME=gcc CXX=g++-6 CC=gcc-6
+      addons: *gcc6
+
+    - env: BUILD_TYPE=Debug COMPILER_NAME=gcc CXX=g++-5 CC=gcc-5
+      addons: &gcc5
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+            - gcc-5
             - g++-5
             - libncurses5-dev
 
-    - os: linux
-      env: COMPILER_NAME=clang++ CXX=clang++-3.9 CC=clang-3.9
-      addons:
+    - env: BUILD_TYPE=Release COMPILER_NAME=gcc CXX=g++-5 CC=gcc-5
+      addons: *gcc5
+
+    ##===============
+    ## Clang
+    ##===============
+    - env: BUILD_TYPE=Debug COMPILER_NAME=clang CXX=clang++-5.0 CC=clang-5.0
+      addons: &clang50
         apt:
           sources:
-            - llvm-toolchain-precise-3.9
             - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-5.0
           packages:
+            - g++-7
+            - clang-5.0
+            - libncurses5-dev
+
+    - env: BUILD_TYPE=Release COMPILER_NAME=clang CXX=clang++-5.0 CC=clang-5.0
+      addons: *clang50
+
+    - env: BUILD_TYPE=Debug COMPILER_NAME=clang CXX=clang++-4.0 CC=clang-4.0
+      addons: &clang40
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-4.0
+          packages:
+            - g++-7
+            - clang-4.0
+            - libncurses5-dev
+
+    - env: BUILD_TYPE=Release COMPILER_NAME=clang CXX=clang++-4.0 CC=clang-4.0
+      addons: *clang40
+
+    - env: BUILD_TYPE=Debug COMPILER_NAME=clang CXX=clang++-3.9 CC=clang-3.9
+      addons: &clang39
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-3.9
+          packages:
+            - g++-7
             - clang-3.9
             - libncurses5-dev
 
-    - os: linux
-      env: COMPILER_NAME=clang++ CXX=clang++-3.8 CC=clang-3.8
-      addons:
+    - env: BUILD_TYPE=Release COMPILER_NAME=clang CXX=clang++-3.9 CC=clang-3.9
+      addons: *clang39
+
+    - env: BUILD_TYPE=Debug COMPILER_NAME=clang CXX=clang++-3.8 CC=clang-3.8
+      addons: &clang38
         apt:
           sources:
-            - llvm-toolchain-precise-3.8
+            - g++-7
             - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
           packages:
             - clang-3.8
-            - libncurses5-dev
 
-    - os: linux
-      env: COMPILER_NAME=clang CXX=clang++-3.7 CC=clang-3.7
-      addons:
+    - env: BUILD_TYPE=Release COMPILER_NAME=clang CXX=clang++-3.8 CC=clang-3.8
+      addons: *clang38
+
+    - env: BUILD_TYPE=Debug COMPILER_NAME=clang CXX=clang++-3.7 CC=clang-3.7
+      addons: &clang37
         apt:
           sources:
-            - llvm-toolchain-precise-3.7
             - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
           packages:
+            - g++-5
             - clang-3.7
             - libncurses5-dev
 
-    - os: linux
-      env: COMPILER_NAME=clang CXX=clang++-3.6 CC=clang-3.6
-      addons:
+    - env: BUILD_TYPE=Release COMPILER_NAME=clang CXX=clang++-3.7 CC=clang-3.7
+      addons: *clang37
+
+    - env: BUILD_TYPE=Debug COMPILER_NAME=clang CXX=clang++-3.6 CC=clang-3.6
+      addons: &clang36
         apt:
           sources:
-            - llvm-toolchain-precise-3.6
             - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
           packages:
+            - g++-5
             - clang-3.6
             - libncurses5-dev
-            
-    - os: osx
-      env: COMPILER=gcc CXX=g++ CC=gcc
-    - os: osx
-      env: COMPILER=clang CXX=clang++ CC=clang
+
+    - env: BUILD_TYPE=Release COMPILER_NAME=clang CXX=clang++-3.6 CC=clang-3.6
+      addons: *clang36
+
+    ##======================
+    ## MacOS
+    ##======================
+
+    # XCode 8.3
+    - env: COMPILER=clang++ BUILD_TYPE=Debug
+      os: osx
+      osx_image: xcode8.3
+      compiler: clang
+
+    - env: COMPILER=clang++ BUILD_TYPE=Release
+      os: osx
+      osx_image: xcode8.3
+      compiler: clang
+
+    # XCode 9.1
+    - env: COMPILER=clang++ BUILD_TYPE=Debug
+      os: osx
+      osx_image: xcode9.1
+      compiler: clang
+
+    - env: COMPILER=clang++ BUILD_TYPE=Release
+      os: osx
+      osx_image: xcode9.1
+      compiler: clang
+
+install:
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir -pv "${DEPS_DIR}"
+
+  ## Update the ancient version of CMake installed on Travis...
+  ## Version 3.5 has been chosen since it is the version that ships with
+  ## Ubuntu 16.04 LTS and could, therefore, be considered te minimum supported
+  ## version of CMake.
+  - |
+      if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+        pushd "${DEPS_DIR}" > /dev/null
+        CMAKE_URL="https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz"
+        mkdir -p cmake
+        travis_retry wget --no-check-certificate --quiet -O - "${CMAKE_URL}" | tar -xz --strip-components=1 -C cmake
+        export PATH="${DEPS_DIR}/cmake/bin:${PATH}"
+        popd > /dev/null
+      else
+        brew install cmake || brew upgrade cmake
+      fi
+  - cmake --version
 
 before_script:
   - mkdir -p build
@@ -79,8 +196,7 @@ before_script:
 script:
   - export COVERALLS_SERVICE_NAME=travis-ci
   - export COVERALLS_REPO_TOKEN=xfGcbl2zMpSZ0KsOSSKcJ11XtDfTQKNQK
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DUNITS_BUILD_TESTS=ON -DUNITS_BUILD_DOCUMENTATION=OFF -DUNITS_ENABLE_COVERAGE=ON -DUNITS_ENABLE_COVERAGE_UPLOAD=ON ..
-  - make
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DUNITS_BUILD_TESTS=ON -DUNITS_BUILD_DOCUMENTATION=OFF -DUNITS_ENABLE_COVERAGE=OFF -DUNITS_ENABLE_COVERAGE_UPLOAD=OFF ..
+  - cmake --build .
   - ctest
-  - make coveralls
 
